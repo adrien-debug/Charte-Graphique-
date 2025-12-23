@@ -76,6 +76,98 @@
       gap: 8px;
     }
     
+    /* Search bar */
+    .search-bar {
+      flex: 1;
+      max-width: 300px;
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 8px 36px 8px 12px;
+      background: var(--ds-bg-surface-1);
+      border: 1px solid var(--ds-border-default);
+      border-radius: 6px;
+      color: var(--ds-text-primary);
+      font-size: 13px;
+      transition: all var(--ds-dur-fast);
+    }
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--ds-green-400);
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+    }
+    .search-bar input::placeholder {
+      color: var(--ds-text-tertiary);
+    }
+    .search-bar__icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ds-text-tertiary);
+      pointer-events: none;
+    }
+    
+    /* Save/Load menu */
+    .dropdown {
+      position: relative;
+    }
+    .dropdown__menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--ds-bg-surface-2);
+      border: 1px solid var(--ds-border-default);
+      border-radius: 8px;
+      padding: 8px;
+      min-width: 200px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 1000;
+    }
+    .dropdown__menu.is-open {
+      display: block;
+    }
+    .dropdown__item {
+      padding: 10px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+      color: var(--ds-text-primary);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dropdown__item:hover {
+      background: var(--ds-bg-surface-1);
+      color: var(--ds-green-400);
+    }
+    
+    /* Copy button */
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 4px;
+      color: var(--ds-green-400);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+    }
+    .copy-btn:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--ds-green-400);
+    }
+    .copy-btn.is-copied {
+      background: rgba(16, 185, 129, 0.3);
+    }
+    
     /* Quick nav tabs */
     .quick-nav {
       grid-column: 1 / -1;
@@ -496,10 +588,43 @@
         </div>
       </div>
       
+      <!-- Search bar -->
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher palettes, composants..." oninput="handleSearch(event)">
+        <span class="search-bar__icon">⌘K</span>
+      </div>
+      
       <div class="selection-bar__actions">
         <button class="ds-btn ds-btn--secondary" onclick="compareMode()" style="font-size: 12px; padding: 8px 16px;">
           Compare
         </button>
+        
+        <!-- Save/Load dropdown -->
+        <div class="dropdown" id="saveLoadDropdown">
+          <button class="ds-btn ds-btn--secondary" onclick="toggleSaveLoadMenu()" style="font-size: 12px; padding: 8px 16px;">
+            💾 Save/Load
+          </button>
+          <div class="dropdown__menu" id="saveLoadMenu">
+            <div class="dropdown__item" onclick="saveTheme()">
+              <span>💾</span>
+              <span>Save Theme</span>
+            </div>
+            <div class="dropdown__item" onclick="loadTheme()">
+              <span>📂</span>
+              <span>Load Theme</span>
+            </div>
+            <div class="dropdown__item" onclick="viewSavedThemes()">
+              <span>📚</span>
+              <span>Saved Themes</span>
+            </div>
+            <div style="height: 1px; background: var(--ds-border-default); margin: 4px 0;"></div>
+            <div class="dropdown__item" onclick="importTheme()">
+              <span>📥</span>
+              <span>Import JSON</span>
+            </div>
+          </div>
+        </div>
+        
         <button class="ds-btn ds-btn--primary" onclick="exportTheme()" style="font-size: 12px; padding: 8px 16px;">
           ⬇ Export
         </button>
@@ -589,9 +714,9 @@
           </div>
         </div>
 
-        <button class="add-button" onclick="alert('Fonctionnalité à venir : Créer une nouvelle palette')">
+        <button class="add-button" onclick="openCustomPaletteCreator()">
           <span class="add-icon"></span>
-          Nouvelle palette
+          🎨 Créer palette custom
         </button>
       </section>
 
@@ -1440,6 +1565,7 @@
           <div class="token-item">
             <span class="token-item__name">CSS</span>
             <span class="token-item__value">${palette.gradient}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${palette.gradient.replace(/'/g, "\\'")}', this)">📋 Copy</button>
           </div>
         </div>
 
@@ -1452,6 +1578,7 @@
                 <span class="token-item__swatch" style="background: ${value};"></span>
                 ${value}
               </span>
+              <button class="copy-btn" onclick="copyToClipboard('${value}', this)">📋 Copy</button>
             </div>
           `).join('')}
         </div>
@@ -1465,6 +1592,7 @@
                 <span class="token-item__swatch" style="background: ${value};"></span>
                 ${value}
               </span>
+              <button class="copy-btn" onclick="copyToClipboard('${value}', this)">📋 Copy</button>
             </div>
           `).join('')}
         </div>
@@ -1478,6 +1606,7 @@
                 <span class="token-item__swatch" style="background: ${value};"></span>
                 ${value}
               </span>
+              <button class="copy-btn" onclick="copyToClipboard('${value}', this)">📋 Copy</button>
             </div>
           `).join('')}
         </div>
@@ -1732,7 +1861,269 @@
           suggestions.classList.add('is-visible');
         }
       }, 1000);
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('saveLoadDropdown');
+        const menu = document.getElementById('saveLoadMenu');
+        if (dropdown && !dropdown.contains(e.target)) {
+          menu.classList.remove('is-open');
+        }
+      });
     });
+
+    // ==================== NEW TOOLS ====================
+
+    // 1. SEARCH FUNCTIONALITY
+    function handleSearch(event) {
+      const query = event.target.value.toLowerCase();
+      
+      if (!query) {
+        // Reset all cards visibility
+        document.querySelectorAll('.palette-card').forEach(card => {
+          card.style.display = '';
+        });
+        return;
+      }
+      
+      // Search in palette cards
+      document.querySelectorAll('.palette-card').forEach(card => {
+        const name = card.querySelector('.palette-card__name')?.textContent.toLowerCase() || '';
+        const matches = name.includes(query);
+        card.style.display = matches ? '' : 'none';
+      });
+      
+      // Scroll to first match
+      const firstMatch = document.querySelector('.palette-card:not([style*="display: none"])');
+      if (firstMatch) {
+        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // 2. COPY TO CLIPBOARD
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = button.textContent;
+        button.textContent = '✓ Copied!';
+        button.classList.add('is-copied');
+        
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('is-copied');
+        }, 2000);
+      }).catch(err => {
+        alert('Failed to copy: ' + err);
+      });
+    }
+
+    // 3. SAVE/LOAD MENU
+    function toggleSaveLoadMenu() {
+      const menu = document.getElementById('saveLoadMenu');
+      menu.classList.toggle('is-open');
+    }
+
+    // 4. SAVE THEME
+    function saveTheme() {
+      const palette = palettes[currentPalette];
+      const themeName = prompt('Nom du thème:', palette.name);
+      
+      if (!themeName) return;
+      
+      const themeData = {
+        name: themeName,
+        palette: currentPalette,
+        timestamp: new Date().toISOString(),
+        tokens: palette
+      };
+      
+      // Save to localStorage
+      let savedThemes = JSON.parse(localStorage.getItem('hearst_themes') || '[]');
+      savedThemes.push(themeData);
+      localStorage.setItem('hearst_themes', JSON.stringify(savedThemes));
+      
+      alert(`✅ Thème "${themeName}" sauvegardé avec succès!`);
+      toggleSaveLoadMenu();
+    }
+
+    // 5. LOAD THEME
+    function loadTheme() {
+      const savedThemes = JSON.parse(localStorage.getItem('hearst_themes') || '[]');
+      
+      if (savedThemes.length === 0) {
+        alert('Aucun thème sauvegardé trouvé.');
+        return;
+      }
+      
+      // Show list of saved themes
+      viewSavedThemes();
+    }
+
+    // 6. VIEW SAVED THEMES
+    function viewSavedThemes() {
+      const savedThemes = JSON.parse(localStorage.getItem('hearst_themes') || '[]');
+      
+      if (savedThemes.length === 0) {
+        alert('Aucun thème sauvegardé.');
+        toggleSaveLoadMenu();
+        return;
+      }
+      
+      const themeList = savedThemes.map((theme, index) => {
+        const date = new Date(theme.timestamp).toLocaleDateString();
+        return `${index + 1}. ${theme.name} (${date})`;
+      }).join('\\n');
+      
+      const choice = prompt(`Thèmes sauvegardés:\\n\\n${themeList}\\n\\nEntrez le numéro du thème à charger:`);
+      
+      if (choice && !isNaN(choice)) {
+        const themeIndex = parseInt(choice) - 1;
+        if (themeIndex >= 0 && themeIndex < savedThemes.length) {
+          const theme = savedThemes[themeIndex];
+          // Apply the saved theme
+          currentPalette = theme.palette;
+          applyPalette();
+          alert(`✅ Thème "${theme.name}" chargé avec succès!`);
+        }
+      }
+      
+      toggleSaveLoadMenu();
+    }
+
+    // 7. IMPORT THEME FROM JSON FILE
+    function importTheme() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const themeData = JSON.parse(event.target.result);
+            
+            // Add to palettes
+            const newId = 'custom-' + Date.now();
+            palettes[newId] = themeData.tokens || themeData;
+            
+            // Apply immediately
+            currentPalette = newId;
+            applyPalette();
+            
+            alert(`✅ Thème importé avec succès!`);
+          } catch (err) {
+            alert('❌ Erreur lors de l\'import: ' + err.message);
+          }
+        };
+        reader.readAsText(file);
+      };
+      
+      input.click();
+      toggleSaveLoadMenu();
+    }
+
+    // 8. CUSTOM PALETTE CREATOR
+    function openCustomPaletteCreator() {
+      const modalBody = document.getElementById('modalBody');
+      document.getElementById('modalTitle').textContent = '🎨 Créer une palette custom';
+      
+      modalBody.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">Nom de la palette</label>
+            <input type="text" id="customPaletteName" placeholder="Ex: My Custom Palette" style="width: 100%; padding: 10px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary);">
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">🎨 Background Primary</label>
+              <input type="color" id="customBgPrimary" value="#0f172a" style="width: 100%; height: 50px; border-radius: 6px; border: 1px solid var(--ds-border-default);">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">🎨 Background Secondary</label>
+              <input type="color" id="customBgSecondary" value="#1e293b" style="width: 100%; height: 50px; border-radius: 6px; border: 1px solid var(--ds-border-default);">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">📝 Text Primary</label>
+              <input type="color" id="customTextPrimary" value="#f8fafc" style="width: 100%; height: 50px; border-radius: 6px; border: 1px solid var(--ds-border-default);">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">📝 Text Secondary</label>
+              <input type="color" id="customTextSecondary" value="#e2e8f0" style="width: 100%; height: 50px; border-radius: 6px; border: 1px solid var(--ds-border-default);">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">✨ Accent Primary</label>
+              <input type="color" id="customAccentPrimary" value="#10b981" style="width: 100%; height: 50px; border-radius: 6px; border: 1px solid var(--ds-border-default);">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">✨ Accent Secondary</label>
+              <input type="color" id="customAccentSecondary" value="#14b8a6" style="width: 100%; height: 50px; border-radius: 6px; border: 1px solid var(--ds-border-default);">
+            </div>
+          </div>
+          
+          <div style="padding: 20px; background: var(--ds-bg-surface-1); border-radius: 8px; border: 1px solid var(--ds-border-default);">
+            <p style="margin: 0; color: var(--ds-text-secondary); font-size: 13px;">
+              💡 <strong>Astuce:</strong> Choisissez des couleurs contrastées pour une meilleure lisibilité. 
+              Les accents doivent ressortir sur les fonds.
+            </p>
+          </div>
+        </div>
+      `;
+      
+      // Replace modal footer buttons
+      const modalFooter = document.querySelector('.modal__footer');
+      modalFooter.innerHTML = `
+        <button class="ds-btn ds-btn--secondary" onclick="closePaletteModal()">Annuler</button>
+        <button class="ds-btn ds-btn--primary" onclick="createCustomPalette()">Créer & Appliquer</button>
+      `;
+      
+      document.getElementById('paletteModal').classList.add('is-visible');
+    }
+
+    // 9. CREATE CUSTOM PALETTE
+    function createCustomPalette() {
+      const name = document.getElementById('customPaletteName').value || 'Custom Palette';
+      const bgPrimary = document.getElementById('customBgPrimary').value;
+      const bgSecondary = document.getElementById('customBgSecondary').value;
+      const textPrimary = document.getElementById('customTextPrimary').value;
+      const textSecondary = document.getElementById('customTextSecondary').value;
+      const accentPrimary = document.getElementById('customAccentPrimary').value;
+      const accentSecondary = document.getElementById('customAccentSecondary').value;
+      
+      // Create palette object
+      const customId = 'custom-' + Date.now();
+      palettes[customId] = {
+        name: name,
+        gradient: `radial-gradient(ellipse at top, ${bgSecondary} 0%, ${bgPrimary} 50%, #000000 100%)`,
+        background: {
+          bgPrimary: bgPrimary,
+          bgSecondary: bgSecondary,
+          bgTertiary: bgSecondary,
+          bgCard: bgSecondary + '80',
+          bgCardHover: bgSecondary + 'B3'
+        },
+        text: {
+          textPrimary: textPrimary,
+          textSecondary: textSecondary,
+          textTertiary: textSecondary,
+          textMuted: textSecondary + '99'
+        },
+        accents: {
+          accentPrimary: accentPrimary,
+          accentSecondary: accentSecondary,
+          accentTertiary: accentPrimary
+        }
+      };
+      
+      // Apply the custom palette
+      currentPalette = customId;
+      applyPalette();
+      
+      closePaletteModal();
+      alert(`✅ Palette "${name}" créée et appliquée avec succès!\\n\\n💾 N'oubliez pas de la sauvegarder avec "Save/Load → Save Theme"`);
+    }
   </script>
 </body>
 </html>
