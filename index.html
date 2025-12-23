@@ -759,7 +759,7 @@
         
         <div class="palette-grid" id="colorPalettes">
           <!-- Palette 1: Dark Pro -->
-          <div class="palette-card is-active" data-palette="dark-pro" onclick="openPaletteModal('dark-pro')">
+          <div class="palette-card is-active" data-palette="dark-pro" onclick="applyPaletteDirectly('dark-pro')">
             <div class="palette-card__colors">
               <div class="palette-card__color" style="background: #0f172a;"></div>
               <div class="palette-card__color" style="background: #10b981;"></div>
@@ -770,7 +770,7 @@
           </div>
 
           <!-- Palette 2: Light Clean -->
-          <div class="palette-card" data-palette="light-clean" onclick="openPaletteModal('light-clean')">
+          <div class="palette-card" data-palette="light-clean" onclick="applyPaletteDirectly('light-clean')">
             <div class="palette-card__colors">
               <div class="palette-card__color" style="background: #ffffff;"></div>
               <div class="palette-card__color" style="background: #0ea5e9;"></div>
@@ -781,7 +781,7 @@
           </div>
 
           <!-- Palette 3: Blue Tech -->
-          <div class="palette-card" data-palette="blue-tech" onclick="openPaletteModal('blue-tech')">
+          <div class="palette-card" data-palette="blue-tech" onclick="applyPaletteDirectly('blue-tech')">
             <div class="palette-card__colors">
               <div class="palette-card__color" style="background: #0c4a6e;"></div>
               <div class="palette-card__color" style="background: #06b6d4;"></div>
@@ -792,7 +792,7 @@
           </div>
 
           <!-- Palette 4: Green Mining -->
-          <div class="palette-card" data-palette="green-mining" onclick="openPaletteModal('green-mining')">
+          <div class="palette-card" data-palette="green-mining" onclick="applyPaletteDirectly('green-mining')">
             <div class="palette-card__colors">
               <div class="palette-card__color" style="background: #052e16;"></div>
               <div class="palette-card__color" style="background: #22c55e;"></div>
@@ -816,7 +816,7 @@
         </div>
         
         <div class="palette-grid">
-          <div class="palette-card" onclick="alert('Typo: Inter + IBM Plex')">
+          <div class="palette-card is-active" data-typo="modern" onclick="applyTypography('modern')">
             <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:8px;">
               <div style="font-size:20px; font-weight:700; color: var(--ds-text-primary);">Aa</div>
               <div style="font-size:10px; color: var(--ds-text-tertiary); margin-top:4px;">Inter</div>
@@ -824,7 +824,7 @@
             <div class="palette-card__name">Modern</div>
           </div>
 
-          <div class="palette-card" onclick="alert('Typo: System UI')">
+          <div class="palette-card" data-typo="system" onclick="applyTypography('system')">
             <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:8px;">
               <div style="font-size:20px; font-weight:700; color: var(--ds-text-primary); font-family: system-ui;">Aa</div>
               <div style="font-size:10px; color: var(--ds-text-tertiary); margin-top:4px;">System</div>
@@ -846,7 +846,7 @@
         </div>
         
         <div class="palette-grid">
-          <div class="palette-card" onclick="alert('Espacements: Compact')">
+          <div class="palette-card" data-spacing="compact" onclick="applySpacing('compact')">
             <div style="display:flex; flex-direction:column; gap:3px; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:12px;">
               <div style="width:60%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
               <div style="width:80%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
@@ -855,7 +855,7 @@
             <div class="palette-card__name">Compact</div>
           </div>
 
-          <div class="palette-card" onclick="alert('Espacements: Confortable')">
+          <div class="palette-card is-active" data-spacing="comfortable" onclick="applySpacing('comfortable')">
             <div style="display:flex; flex-direction:column; gap:8px; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:12px;">
               <div style="width:60%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
               <div style="width:80%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
@@ -1684,6 +1684,120 @@
       document.getElementById('paletteModal').classList.remove('is-visible');
     }
 
+    // Apply Typography DIRECTLY
+    function applyTypography(typoId) {
+      const root = document.documentElement;
+      
+      if (typoId === 'modern') {
+        root.style.setProperty('--ds-font-sans', 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif');
+        root.style.setProperty('--ds-font-mono', '"IBM Plex Mono", "Courier New", monospace');
+      } else if (typoId === 'system') {
+        root.style.setProperty('--ds-font-sans', 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif');
+        root.style.setProperty('--ds-font-mono', 'ui-monospace, "SF Mono", "Courier New", monospace');
+      }
+      
+      // Update active state
+      document.querySelectorAll('[data-typo]').forEach(card => {
+        card.classList.remove('is-active');
+      });
+      const activeCard = document.querySelector('[data-typo="' + typoId + '"]');
+      if (activeCard) activeCard.classList.add('is-active');
+      
+      // Animation
+      const pageContentWrapper = document.getElementById('pageContentWrapper');
+      if (pageContentWrapper) {
+        pageContentWrapper.style.transition = 'all 0.3s ease';
+        pageContentWrapper.style.opacity = '0.8';
+        setTimeout(() => {
+          pageContentWrapper.style.opacity = '1';
+        }, 150);
+      }
+    }
+    
+    // Apply Spacing DIRECTLY
+    function applySpacing(spacingId) {
+      const root = document.documentElement;
+      
+      if (spacingId === 'compact') {
+        root.style.setProperty('--ds-space-1', '2px');
+        root.style.setProperty('--ds-space-2', '4px');
+        root.style.setProperty('--ds-space-3', '6px');
+        root.style.setProperty('--ds-space-4', '8px');
+        root.style.setProperty('--ds-space-6', '12px');
+        root.style.setProperty('--ds-space-8', '16px');
+        root.style.setProperty('--ds-space-12', '24px');
+        root.style.setProperty('--ds-space-16', '32px');
+      } else if (spacingId === 'comfortable') {
+        root.style.setProperty('--ds-space-1', '4px');
+        root.style.setProperty('--ds-space-2', '8px');
+        root.style.setProperty('--ds-space-3', '12px');
+        root.style.setProperty('--ds-space-4', '16px');
+        root.style.setProperty('--ds-space-6', '24px');
+        root.style.setProperty('--ds-space-8', '32px');
+        root.style.setProperty('--ds-space-12', '48px');
+        root.style.setProperty('--ds-space-16', '64px');
+      }
+      
+      // Update active state
+      document.querySelectorAll('[data-spacing]').forEach(card => {
+        card.classList.remove('is-active');
+      });
+      const activeCard = document.querySelector('[data-spacing="' + spacingId + '"]');
+      if (activeCard) activeCard.classList.add('is-active');
+      
+      // Animation
+      const pageContentWrapper = document.getElementById('pageContentWrapper');
+      if (pageContentWrapper) {
+        pageContentWrapper.style.transition = 'all 0.3s ease';
+        pageContentWrapper.style.opacity = '0.8';
+        setTimeout(() => {
+          pageContentWrapper.style.opacity = '1';
+        }, 150);
+      }
+    }
+    
+    // Apply palette DIRECTLY without modal
+    function applyPaletteDirectly(paletteId) {
+      currentPalette = paletteId;
+      const palette = palettes[paletteId];
+      const root = document.documentElement;
+      
+      // Appliquer les variables CSS
+      root.style.setProperty('--preview-bg', palette.gradient);
+      root.style.setProperty('--ds-bg-canvas', palette.background.bgPrimary);
+      root.style.setProperty('--ds-bg-surface-1', palette.background.bgSecondary);
+      root.style.setProperty('--ds-bg-surface-2', palette.background.bgTertiary);
+      root.style.setProperty('--ds-text-primary', palette.text.textPrimary);
+      root.style.setProperty('--ds-text-secondary', palette.text.textSecondary);
+      root.style.setProperty('--ds-text-tertiary', palette.text.textTertiary);
+      root.style.setProperty('--ds-green-400', palette.accents.accentPrimary);
+      
+      // Update selection bar
+      const paletteColors = [palette.background.bgPrimary, palette.accents.accentPrimary, palette.background.bgSecondary];
+      document.getElementById('selectedPaletteName').textContent = palette.name;
+      const previewContainer = document.getElementById('selectedPalettePreview');
+      previewContainer.innerHTML = paletteColors.map(color => 
+        '<div class="selection-bar__color" style="background: ' + color + ';"></div>'
+      ).join('');
+      
+      // Mettre à jour l'état actif
+      document.querySelectorAll('.palette-card').forEach(card => {
+        card.classList.remove('is-active');
+      });
+      const activeCard = document.querySelector('[data-palette="' + paletteId + '"]');
+      if (activeCard) activeCard.classList.add('is-active');
+      
+      // Animation de confirmation
+      const pageContentWrapper = document.getElementById('pageContentWrapper');
+      if (pageContentWrapper) {
+        pageContentWrapper.style.transition = 'all 0.3s ease';
+        pageContentWrapper.style.opacity = '0.7';
+        setTimeout(() => {
+          pageContentWrapper.style.opacity = '1';
+        }, 150);
+      }
+    }
+    
     function applyPalette() {
       const palette = palettes[currentPalette];
       const root = document.documentElement;
