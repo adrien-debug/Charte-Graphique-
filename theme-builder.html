@@ -18,6 +18,137 @@
       display: grid;
       grid-template-columns: 320px 1fr;
       min-height: 100vh;
+      grid-template-rows: auto auto 1fr;
+    }
+    
+    /* Selection bar sticky */
+    .selection-bar {
+      grid-column: 1 / -1;
+      background: var(--ds-bg-surface-2);
+      border-bottom: 2px solid var(--ds-border-default);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .selection-bar__item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: var(--ds-bg-surface-1);
+      border: 1px solid var(--ds-border-subtle);
+      border-radius: 8px;
+      transition: all var(--ds-dur-fast);
+    }
+    .selection-bar__item:hover {
+      border-color: var(--ds-green-400);
+    }
+    .selection-bar__label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ds-text-tertiary);
+    }
+    .selection-bar__value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ds-text-primary);
+    }
+    .selection-bar__preview {
+      display: flex;
+      gap: 4px;
+    }
+    .selection-bar__color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid var(--ds-border-default);
+    }
+    .selection-bar__actions {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+    }
+    
+    /* Quick nav tabs */
+    .quick-nav {
+      grid-column: 1 / -1;
+      background: var(--ds-bg-surface-1);
+      border-bottom: 1px solid var(--ds-border-default);
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+    }
+    .quick-nav__tab {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--ds-text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+      white-space: nowrap;
+    }
+    .quick-nav__tab:hover {
+      color: var(--ds-text-primary);
+      background: var(--ds-bg-surface-2);
+    }
+    .quick-nav__tab.is-active {
+      color: var(--ds-green-400);
+      border-bottom-color: var(--ds-green-400);
+      font-weight: 600;
+    }
+    
+    /* Smart suggestions */
+    .smart-suggestions {
+      margin: 16px 0;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(20,184,166,0.1) 100%);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 8px;
+      display: none;
+    }
+    .smart-suggestions.is-visible {
+      display: block;
+    }
+    .smart-suggestions__title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ds-green-400);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .smart-suggestions__list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .smart-suggestions__item {
+      padding: 10px 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--ds-text-secondary);
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .smart-suggestions__item:hover {
+      background: rgba(16,185,129,0.15);
+      color: var(--ds-text-primary);
     }
 
     /* Header titre */
@@ -46,63 +177,11 @@
 
     /* Sidebar de sélection */
     .selector-sidebar {
-      background: #1a1d23;
+      background: var(--ds-bg-surface-1);
       border-right: 1px solid var(--ds-border-default);
-      padding: 0;
+      padding: var(--ds-space-6);
       overflow-y: auto;
       height: calc(100vh - 120px);
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Navigation menu */
-    .nav-menu {
-      flex: 1;
-      padding: var(--ds-space-2) 0;
-    }
-    .nav-item {
-      padding: 14px 24px;
-      color: #94a3b8;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all var(--ds-dur-fast);
-      border-left: 3px solid transparent;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-item:hover {
-      background: rgba(255,255,255,0.05);
-      color: var(--ds-text-primary);
-    }
-    .nav-item.is-active {
-      background: rgba(16,185,129,0.15);
-      color: #10b981;
-      border-left-color: #10b981;
-    }
-    .nav-item__count {
-      font-size: 12px;
-      padding: 2px 8px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      font-weight: 600;
-    }
-
-    /* Sidebar footer */
-    .sidebar-footer {
-      padding: var(--ds-space-6) var(--ds-space-6);
-      border-top: 1px solid var(--ds-border-subtle);
-      text-align: center;
-    }
-    .sidebar-footer__text {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #64748b;
-      margin: 0;
-      text-transform: uppercase;
-      line-height: 1.5;
     }
 
     /* Section de tokens */
@@ -396,34 +475,408 @@
       <p>Theme Builder — Sélectionnez vos tokens graphiques</p>
     </div>
 
+    <!-- Selection Bar (Sticky) -->
+    <div class="selection-bar">
+      <div class="selection-bar__item">
+        <div>
+          <div class="selection-bar__label">Couleurs</div>
+          <div class="selection-bar__value" id="selectedPaletteName">Dark Pro</div>
+        </div>
+        <div class="selection-bar__preview" id="selectedPalettePreview">
+          <div class="selection-bar__color" style="background: #0f172a;"></div>
+          <div class="selection-bar__color" style="background: #10b981;"></div>
+          <div class="selection-bar__color" style="background: #1e293b;"></div>
+        </div>
+      </div>
+      
+      <div class="selection-bar__item">
+        <div>
+          <div class="selection-bar__label">Composant</div>
+          <div class="selection-bar__value" id="selectedComponent">Preview</div>
+        </div>
+      </div>
+      
+      <div class="selection-bar__actions">
+        <button class="ds-btn ds-btn--secondary" onclick="compareMode()" style="font-size: 12px; padding: 8px 16px;">
+          Compare
+        </button>
+        <button class="ds-btn ds-btn--primary" onclick="exportTheme()" style="font-size: 12px; padding: 8px 16px;">
+          ⬇ Export
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Tabs -->
+    <div class="quick-nav">
+      <button class="quick-nav__tab is-active" onclick="scrollToSection('couleurs')">🎨 Couleurs</button>
+      <button class="quick-nav__tab" onclick="scrollToSection('typographie')">Aa Typographie</button>
+      <button class="quick-nav__tab" onclick="scrollToSection('espacements')">↔️ Espacements</button>
+      <button class="quick-nav__tab" onclick="scrollToSection('boxes')">📦 Boxes</button>
+      <button class="quick-nav__tab" onclick="scrollToSection('menu')">☰ Menu</button>
+      <button class="quick-nav__tab" onclick="scrollToSection('forms')">📝 Forms</button>
+      <button class="quick-nav__tab" onclick="scrollToSection('alerts')">🔔 Alerts</button>
+    </div>
+
     <!-- Sidebar de sélection -->
     <aside class="selector-sidebar">
-      <!-- Navigation menu -->
-      <nav class="nav-menu">
-        <div class="nav-item" onclick="showSection('introduction')">Introduction</div>
-        <div class="nav-item" onclick="showSection('couleurs')">
-          <span>Couleurs</span>
-          <span class="nav-item__count">4</span>
+      <!-- Section Couleurs -->
+      <section class="token-section" id="couleurs">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Couleurs</h2>
         </div>
-        <div class="nav-item" onclick="showSection('typographie')">
-          <span>Typographie</span>
-          <span class="nav-item__count">2</span>
+        
+        <!-- Smart Suggestions -->
+        <div class="smart-suggestions" id="colorSuggestions">
+          <div class="smart-suggestions__title">
+            <span>💡</span>
+            <span>Suggestions intelligentes</span>
+          </div>
+          <div class="smart-suggestions__list">
+            <div class="smart-suggestions__item" onclick="applySuggestion('dark-pro', 'card-glass')">
+              <span>✨ Dark Pro + Card Glass = Perfect combo</span>
+              <span style="font-size: 11px; color: var(--ds-green-400);">Essayer →</span>
+            </div>
+            <div class="smart-suggestions__item" onclick="applySuggestion('blue-tech', 'menu-sidebar')">
+              <span>🎯 Blue Tech recommended for tech dashboards</span>
+              <span style="font-size: 11px; color: var(--ds-green-400);">Essayer →</span>
+            </div>
+          </div>
         </div>
-        <div class="nav-item" onclick="showSection('espacements')">Espacements</div>
-        <div class="nav-item" onclick="showSection('composants')">Composants</div>
-        <div class="nav-item" onclick="showSection('grilles')">Grilles</div>
-        <div class="nav-item is-active" onclick="showSection('hero')">Hero System</div>
-        <div class="nav-item" onclick="showSection('motion')">Motion</div>
-        <div class="nav-item" onclick="showSection('3d')">3D / Render</div>
-        <div class="nav-item" onclick="showSection('export')">Export</div>
-      </nav>
+        
+        <div class="palette-grid" id="colorPalettes">
+          <!-- Palette 1: Dark Pro -->
+          <div class="palette-card is-active" data-palette="dark-pro" onclick="openPaletteModal('dark-pro')">
+            <div class="palette-card__colors">
+              <div class="palette-card__color" style="background: #0f172a;"></div>
+              <div class="palette-card__color" style="background: #10b981;"></div>
+              <div class="palette-card__color" style="background: #1e293b;"></div>
+              <div class="palette-card__color" style="background: #f8fafc;"></div>
+            </div>
+            <div class="palette-card__name">Dark Pro</div>
+          </div>
 
-      <!-- Footer -->
-      <div class="sidebar-footer">
-        <p class="sidebar-footer__text">
-          Bitcoin Mining Corp<br/>IPO-Ready
-        </p>
-      </div>
+          <!-- Palette 2: Light Clean -->
+          <div class="palette-card" data-palette="light-clean" onclick="openPaletteModal('light-clean')">
+            <div class="palette-card__colors">
+              <div class="palette-card__color" style="background: #ffffff;"></div>
+              <div class="palette-card__color" style="background: #0ea5e9;"></div>
+              <div class="palette-card__color" style="background: #f1f5f9;"></div>
+              <div class="palette-card__color" style="background: #0f172a;"></div>
+            </div>
+            <div class="palette-card__name">Light Clean</div>
+          </div>
+
+          <!-- Palette 3: Blue Tech -->
+          <div class="palette-card" data-palette="blue-tech" onclick="openPaletteModal('blue-tech')">
+            <div class="palette-card__colors">
+              <div class="palette-card__color" style="background: #0c4a6e;"></div>
+              <div class="palette-card__color" style="background: #06b6d4;"></div>
+              <div class="palette-card__color" style="background: #075985;"></div>
+              <div class="palette-card__color" style="background: #e0f2fe;"></div>
+            </div>
+            <div class="palette-card__name">Blue Tech</div>
+          </div>
+
+          <!-- Palette 4: Green Mining -->
+          <div class="palette-card" data-palette="green-mining" onclick="openPaletteModal('green-mining')">
+            <div class="palette-card__colors">
+              <div class="palette-card__color" style="background: #052e16;"></div>
+              <div class="palette-card__color" style="background: #22c55e;"></div>
+              <div class="palette-card__color" style="background: #14532d;"></div>
+              <div class="palette-card__color" style="background: #dcfce7;"></div>
+            </div>
+            <div class="palette-card__name">Green Mining</div>
+          </div>
+        </div>
+
+        <button class="add-button" onclick="alert('Fonctionnalité à venir : Créer une nouvelle palette')">
+          <span class="add-icon"></span>
+          Nouvelle palette
+        </button>
+      </section>
+
+      <!-- Section Typographie -->
+      <section class="token-section" id="typographie">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Typographie</h2>
+        </div>
+        
+        <div class="palette-grid">
+          <div class="palette-card" onclick="alert('Typo: Inter + IBM Plex')">
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:8px;">
+              <div style="font-size:20px; font-weight:700; color: var(--ds-text-primary);">Aa</div>
+              <div style="font-size:10px; color: var(--ds-text-tertiary); margin-top:4px;">Inter</div>
+            </div>
+            <div class="palette-card__name">Modern</div>
+          </div>
+
+          <div class="palette-card" onclick="alert('Typo: System UI')">
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:8px;">
+              <div style="font-size:20px; font-weight:700; color: var(--ds-text-primary); font-family: system-ui;">Aa</div>
+              <div style="font-size:10px; color: var(--ds-text-tertiary); margin-top:4px;">System</div>
+            </div>
+            <div class="palette-card__name">System</div>
+          </div>
+        </div>
+
+        <button class="add-button">
+          <span class="add-icon"></span>
+          Nouveau style typo
+        </button>
+      </section>
+
+      <!-- Section Espacements -->
+      <section class="token-section" id="espacements">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Espacements</h2>
+        </div>
+        
+        <div class="palette-grid">
+          <div class="palette-card" onclick="alert('Espacements: Compact')">
+            <div style="display:flex; flex-direction:column; gap:3px; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:12px;">
+              <div style="width:60%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+              <div style="width:80%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+              <div style="width:70%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Compact</div>
+          </div>
+
+          <div class="palette-card" onclick="alert('Espacements: Confortable')">
+            <div style="display:flex; flex-direction:column; gap:8px; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:12px;">
+              <div style="width:60%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+              <div style="width:80%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+              <div style="width:70%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Confortable</div>
+          </div>
+        </div>
+
+        <button class="add-button">
+          <span class="add-icon"></span>
+          Nouveau système
+        </button>
+      </section>
+
+      <!-- Section Boxes / Cards -->
+      <section class="token-section" id="boxes">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Boxes / Cards</h2>
+        </div>
+        
+        <div class="palette-grid">
+          <div class="palette-card" onclick="showComponentPreview('card-basic')">
+            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: var(--ds-bg-surface-2); height:100%;">
+              <div style="width:100%; height:20px; background: var(--ds-bg-surface-3); border-radius:4px;"></div>
+              <div style="width:80%; height:8px; background: var(--ds-border-default); border-radius:2px;"></div>
+              <div style="width:90%; height:8px; background: var(--ds-border-default); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Card Basic</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('card-gradient')">
+            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); height:100%;">
+              <div style="width:100%; height:20px; background: rgba(255,255,255,0.1); border-radius:4px;"></div>
+              <div style="width:80%; height:8px; background: rgba(255,255,255,0.1); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Card Gradient</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('card-bordered')">
+            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: var(--ds-bg-surface-2); height:100%; border:2px solid var(--ds-green-400);">
+              <div style="width:100%; height:20px; background: var(--ds-bg-surface-3); border-radius:4px;"></div>
+              <div style="width:80%; height:8px; background: var(--ds-border-default); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Card Border</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('card-glass')">
+            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); height:100%; border:1px solid rgba(255,255,255,0.1);">
+              <div style="width:100%; height:20px; background: rgba(255,255,255,0.1); border-radius:4px;"></div>
+              <div style="width:80%; height:8px; background: rgba(255,255,255,0.1); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Card Glass</div>
+          </div>
+        </div>
+
+        <button class="add-button">
+          <span class="add-icon"></span>
+          Nouvelle box
+        </button>
+      </section>
+
+      <!-- Section Menu / Navigation -->
+      <section class="token-section" id="menu">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Menu / Navigation</h2>
+        </div>
+        
+        <div class="palette-grid">
+          <div class="palette-card" onclick="showComponentPreview('menu-top')">
+            <div style="display:flex; flex-direction:column; height:100%; background: var(--ds-bg-surface-2);">
+              <div style="width:100%; height:30%; background: var(--ds-bg-surface-3); display:flex; gap:4px; padding:6px;">
+                <div style="width:30%; height:100%; background: var(--ds-green-400); border-radius:2px;"></div>
+                <div style="width:20%; height:100%; background: var(--ds-border-default); border-radius:2px;"></div>
+                <div style="width:20%; height:100%; background: var(--ds-border-default); border-radius:2px;"></div>
+              </div>
+              <div style="flex:1; padding:6px;">
+                <div style="width:100%; height:100%; background: var(--ds-bg-canvas); border-radius:2px;"></div>
+              </div>
+            </div>
+            <div class="palette-card__name">Top Nav</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('menu-sidebar')">
+            <div style="display:flex; height:100%; background: var(--ds-bg-surface-2);">
+              <div style="width:35%; background: var(--ds-bg-surface-3); padding:6px; display:flex; flex-direction:column; gap:4px;">
+                <div style="width:100%; height:15px; background: var(--ds-green-400); border-radius:2px;"></div>
+                <div style="width:100%; height:8px; background: var(--ds-border-default); border-radius:2px;"></div>
+                <div style="width:100%; height:8px; background: var(--ds-border-default); border-radius:2px;"></div>
+              </div>
+              <div style="flex:1; padding:6px;">
+                <div style="width:100%; height:100%; background: var(--ds-bg-canvas); border-radius:2px;"></div>
+              </div>
+            </div>
+            <div class="palette-card__name">Sidebar Nav</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('menu-mobile')">
+            <div style="display:flex; flex-direction:column; height:100%; background: var(--ds-bg-surface-2);">
+              <div style="width:100%; height:25%; background: var(--ds-bg-surface-3); display:flex; justify-content:space-between; padding:6px;">
+                <div style="width:15px; height:15px; background: var(--ds-green-400); border-radius:2px;"></div>
+                <div style="width:15px; height:15px; background: var(--ds-border-default); border-radius:2px;"></div>
+              </div>
+              <div style="flex:1; padding:6px;">
+                <div style="width:100%; height:100%; background: var(--ds-bg-canvas); border-radius:2px;"></div>
+              </div>
+              <div style="width:100%; height:20%; background: var(--ds-bg-surface-3); display:flex; gap:4px; padding:6px; justify-content:space-around;">
+                <div style="width:12px; height:12px; background: var(--ds-border-default); border-radius:50%;"></div>
+                <div style="width:12px; height:12px; background: var(--ds-green-400); border-radius:50%;"></div>
+                <div style="width:12px; height:12px; background: var(--ds-border-default); border-radius:50%;"></div>
+              </div>
+            </div>
+            <div class="palette-card__name">Mobile Nav</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('menu-tabs')">
+            <div style="display:flex; flex-direction:column; height:100%; background: var(--ds-bg-surface-2); padding:6px; gap:6px;">
+              <div style="display:flex; gap:4px; height:20%;">
+                <div style="flex:1; background: var(--ds-green-400); border-radius:2px;"></div>
+                <div style="flex:1; background: var(--ds-bg-surface-3); border-radius:2px;"></div>
+                <div style="flex:1; background: var(--ds-bg-surface-3); border-radius:2px;"></div>
+              </div>
+              <div style="flex:1; background: var(--ds-bg-canvas); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Tabs</div>
+          </div>
+        </div>
+
+        <button class="add-button">
+          <span class="add-icon"></span>
+          Nouveau menu
+        </button>
+      </section>
+
+      <!-- Section Forms / Login -->
+      <section class="token-section" id="forms">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Forms / Login</h2>
+        </div>
+        
+        <div class="palette-grid">
+          <div class="palette-card" onclick="showComponentPreview('form-login')">
+            <div style="display:flex; flex-direction:column; justify-content:center; gap:8px; padding:12px; background: var(--ds-bg-surface-2); height:100%;">
+              <div style="width:100%; height:15px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-border-default); border-radius:4px;"></div>
+              <div style="width:100%; height:15px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-border-default); border-radius:4px;"></div>
+              <div style="width:100%; height:18px; background: var(--ds-green-400); border-radius:4px; margin-top:4px;"></div>
+            </div>
+            <div class="palette-card__name">Login Form</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('form-inputs')">
+            <div style="display:flex; flex-direction:column; justify-content:center; gap:6px; padding:12px; background: var(--ds-bg-surface-2); height:100%;">
+              <div style="width:100%; height:12px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-border-default); border-radius:4px;"></div>
+              <div style="width:100%; height:12px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-border-default); border-radius:4px;"></div>
+              <div style="width:100%; height:12px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-border-default); border-radius:4px;"></div>
+              <div style="width:100%; height:12px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-border-default); border-radius:4px;"></div>
+            </div>
+            <div class="palette-card__name">Input Fields</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('form-search')">
+            <div style="display:flex; align-items:center; justify-content:center; padding:12px; background: var(--ds-bg-surface-2); height:100%;">
+              <div style="width:90%; height:25px; background: var(--ds-bg-surface-3); border:2px solid var(--ds-green-400); border-radius:20px; display:flex; align-items:center; padding:0 8px;">
+                <div style="width:12px; height:12px; border:2px solid var(--ds-text-secondary); border-radius:50%;"></div>
+              </div>
+            </div>
+            <div class="palette-card__name">Search Bar</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('form-select')">
+            <div style="display:flex; flex-direction:column; justify-content:center; gap:6px; padding:12px; background: var(--ds-bg-surface-2); height:100%;">
+              <div style="width:100%; height:15px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-border-default); border-radius:4px; position:relative;">
+                <div style="position:absolute; right:4px; top:50%; transform:translateY(-50%); width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid var(--ds-text-secondary);"></div>
+              </div>
+              <div style="width:100%; height:25px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-green-400); border-radius:4px; padding:4px;">
+                <div style="width:80%; height:6px; background: var(--ds-green-400); border-radius:2px;"></div>
+                <div style="width:60%; height:6px; background: var(--ds-text-tertiary); border-radius:2px; margin-top:2px;"></div>
+              </div>
+            </div>
+            <div class="palette-card__name">Select / Dropdown</div>
+          </div>
+        </div>
+
+        <button class="add-button">
+          <span class="add-icon"></span>
+          Nouveau formulaire
+        </button>
+      </section>
+
+      <!-- Section Alerts / Badges -->
+      <section class="token-section" id="alerts">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Alerts / Badges</h2>
+        </div>
+        
+        <div class="palette-grid">
+          <div class="palette-card" onclick="showComponentPreview('alert-success')">
+            <div style="display:flex; align-items:center; justify-content:center; padding:12px; background: rgba(16, 185, 129, 0.15); border-left:3px solid var(--ds-green-400); height:100%;">
+              <div style="text-align:center; font-size:10px; color: var(--ds-green-400);">✓ Success</div>
+            </div>
+            <div class="palette-card__name">Alert Success</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('alert-error')">
+            <div style="display:flex; align-items:center; justify-content:center; padding:12px; background: rgba(239, 68, 68, 0.15); border-left:3px solid #ef4444; height:100%;">
+              <div style="text-align:center; font-size:10px; color: #ef4444;">✕ Error</div>
+            </div>
+            <div class="palette-card__name">Alert Error</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('badge-status')">
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px; padding:12px; background: var(--ds-bg-surface-2); height:100%; flex-wrap:wrap;">
+              <div style="padding:4px 8px; background: var(--ds-green-400); border-radius:12px; font-size:9px; color:black;">Live</div>
+              <div style="padding:4px 8px; background: #ef4444; border-radius:12px; font-size:9px; color:white;">Off</div>
+              <div style="padding:4px 8px; background: #f59e0b; border-radius:12px; font-size:9px; color:black;">Warn</div>
+            </div>
+            <div class="palette-card__name">Status Badges</div>
+          </div>
+
+          <div class="palette-card" onclick="showComponentPreview('notification')">
+            <div style="display:flex; flex-direction:column; gap:4px; padding:10px; background: var(--ds-bg-surface-3); border:1px solid var(--ds-green-400); border-radius:6px; height:100%; position:relative;">
+              <div style="position:absolute; top:6px; right:6px; width:8px; height:8px; background: var(--ds-green-400); border-radius:50%;"></div>
+              <div style="width:70%; height:8px; background: var(--ds-text-primary); border-radius:2px;"></div>
+              <div style="width:90%; height:6px; background: var(--ds-text-secondary); border-radius:2px;"></div>
+              <div style="width:80%; height:6px; background: var(--ds-text-secondary); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Notification</div>
+          </div>
+        </div>
+
+        <button class="add-button">
+          <span class="add-icon"></span>
+          Nouvel élément
+        </button>
+      </section>
     </aside>
 
     <!-- Zone de preview -->
@@ -484,123 +937,6 @@
   </div>
 
   <script>
-    // Navigation entre sections
-    function showSection(sectionName) {
-      // Mettre à jour l'état actif
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('is-active');
-      });
-      event.currentTarget.classList.add('is-active');
-
-      // Mettre à jour le contenu de la preview
-      const previewContent = document.getElementById('previewContent');
-      
-      const sections = {
-        'introduction': `
-          <h1>Introduction</h1>
-          <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
-            Système de design complet pour société de Bitcoin mining institutionnelle.
-          </p>
-        `,
-        'couleurs': `
-          <h1>Palettes de couleurs</h1>
-          <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
-            4 palettes disponibles : Dark Pro, Light Clean, Blue Tech, Green Mining
-          </p>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
-            <div style="padding: 24px; background: var(--ds-bg-surface-2); border-radius: 8px; cursor: pointer;" onclick="openPaletteModal('dark-pro')">
-              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
-                <div style="height: 40px; background: #0f172a; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #10b981; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #1e293b; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #f8fafc; border-radius: 4px;"></div>
-              </div>
-              <h3 style="margin: 0; font-size: 16px;">Dark Pro</h3>
-            </div>
-            <div style="padding: 24px; background: var(--ds-bg-surface-2); border-radius: 8px; cursor: pointer;" onclick="openPaletteModal('light-clean')">
-              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
-                <div style="height: 40px; background: #ffffff; border-radius: 4px; border: 1px solid #e2e8f0;"></div>
-                <div style="height: 40px; background: #0ea5e9; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #f1f5f9; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #0f172a; border-radius: 4px;"></div>
-              </div>
-              <h3 style="margin: 0; font-size: 16px;">Light Clean</h3>
-            </div>
-            <div style="padding: 24px; background: var(--ds-bg-surface-2); border-radius: 8px; cursor: pointer;" onclick="openPaletteModal('blue-tech')">
-              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
-                <div style="height: 40px; background: #0c4a6e; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #06b6d4; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #075985; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #e0f2fe; border-radius: 4px;"></div>
-              </div>
-              <h3 style="margin: 0; font-size: 16px;">Blue Tech</h3>
-            </div>
-            <div style="padding: 24px; background: var(--ds-bg-surface-2); border-radius: 8px; cursor: pointer;" onclick="openPaletteModal('green-mining')">
-              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
-                <div style="height: 40px; background: #052e16; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #22c55e; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #14532d; border-radius: 4px;"></div>
-                <div style="height: 40px; background: #dcfce7; border-radius: 4px;"></div>
-              </div>
-              <h3 style="margin: 0; font-size: 16px;">Green Mining</h3>
-            </div>
-          </div>
-        `,
-        'typographie': `
-          <h1>Typographie</h1>
-          <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
-            Inter (sans-serif) + IBM Plex Mono (données financières)
-          </p>
-          <div class="demo" style="margin-top: var(--ds-space-8);">
-            <h1 style="margin-top: 0;">Heading Level 1</h1>
-            <h2>Heading Level 2</h2>
-            <h3>Heading Level 3</h3>
-            <p>Texte courant pour paragraphes et descriptions.</p>
-            <p class="ds-data">1,234,567.89 | 87.7 MW | 5.98 EH/s</p>
-          </div>
-        `,
-        'hero': `
-          <h1>Hero System</h1>
-          <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
-            Typographie massive avec contour et dégradés optionnels
-          </p>
-          <div style="background: linear-gradient(180deg, rgba(11,13,14,0.55), rgba(11,13,14,0.88)), url('https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=1200&q=75'); background-size:cover; background-position:center; padding: var(--ds-space-10); text-align:center; border-radius: 8px;">
-            <div class="ds-pill" style="margin-bottom:18px;">Qatar Vision 2030</div>
-            <h1 class="heroTitle">
-              <span class="heroTitle__row">
-                <span class="outlineA">Qatar Bitcoin</span>
-              </span>
-              <span class="heroTitle__row">
-                <span class="outlineA gradClip gradGreenCyan">Strategic Reserve</span>
-              </span>
-            </h1>
-            <div class="heroSub">100MW Sovereign Mining Facility</div>
-          </div>
-        `,
-        'composants': `
-          <h1>Composants</h1>
-          <div style="display: grid; gap: 16px; margin-top: var(--ds-space-8);">
-            <button class="ds-btn ds-btn--primary">Bouton Primary</button>
-            <button class="ds-btn ds-btn--secondary">Bouton Secondary</button>
-          </div>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: var(--ds-space-8);">
-            <div class="ds-kpi">
-              <div class="ds-kpi__label">Hashrate</div>
-              <div class="ds-kpi__value">5.98 EH/s</div>
-              <div class="ds-kpi__meta">Live</div>
-            </div>
-            <div class="ds-kpi">
-              <div class="ds-kpi__label">Puissance</div>
-              <div class="ds-kpi__value ds-kpi__value--accent">87.7 MW</div>
-              <div class="ds-kpi__meta">Nominal</div>
-            </div>
-          </div>
-        `
-      };
-
-      previewContent.innerHTML = sections[sectionName] || sections['hero'];
-    }
-
     // Définition des palettes
     const palettes = {
       'dark-pro': {
@@ -694,6 +1030,401 @@
     };
 
     let currentPalette = 'dark-pro';
+
+    // Preview templates pour chaque composant
+    const componentPreviews = {
+      'card-basic': `
+        <h2>Card Basic</h2>
+        <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <div class="demo">
+            <h3 style="margin-top: 0;">Titre de la card</h3>
+            <p style="color: var(--ds-text-secondary);">
+              Contenu de la card avec texte descriptif. Les cards basiques ont un fond simple et des bordures subtiles.
+            </p>
+            <button class="ds-btn ds-btn--primary" style="margin-top: 12px;">Action</button>
+          </div>
+          <div class="demo">
+            <h3 style="margin-top: 0;">Mining Stats</h3>
+            <div class="ds-kpi">
+              <div class="ds-kpi__label">Hashrate</div>
+              <div class="ds-kpi__value">5.98 EH/s</div>
+              <div class="ds-kpi__meta">Live</div>
+            </div>
+          </div>
+          <div class="demo">
+            <h3 style="margin-top: 0;">Quick Info</h3>
+            <p style="color: var(--ds-text-secondary); font-size: 14px; margin: 0;">
+              87.7 MW • 17,864 miners<br/>
+              Uptime: 99.8%
+            </p>
+          </div>
+        </div>
+      `,
+      'card-gradient': `
+        <h2>Card Gradient</h2>
+        <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 24px; border-radius: 12px; border: 1px solid var(--ds-border-default);">
+            <h3 style="margin-top: 0; background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Premium Feature</h3>
+            <p style="color: var(--ds-text-secondary);">
+              Cards avec dégradé pour mettre en avant du contenu premium ou important.
+            </p>
+            <button class="ds-btn ds-btn--primary" style="margin-top: 12px;">Upgrade</button>
+          </div>
+          <div style="background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%); padding: 24px; border-radius: 12px;">
+            <h3 style="margin-top: 0; color: #e0f2fe;">Blue Theme</h3>
+            <p style="color: #bae6fd;">
+              Variante bleue du dégradé pour diversifier les styles.
+            </p>
+          </div>
+        </div>
+      `,
+      'card-bordered': `
+        <h2>Card Border</h2>
+        <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <div style="background: var(--ds-bg-surface-1); padding: 24px; border-radius: 12px; border: 2px solid var(--ds-green-400);">
+            <h3 style="margin-top: 0; color: var(--ds-green-400);">✓ Active</h3>
+            <p style="color: var(--ds-text-secondary);">
+              Card avec bordure colorée pour indiquer un état actif ou sélectionné.
+            </p>
+          </div>
+          <div style="background: var(--ds-bg-surface-1); padding: 24px; border-radius: 12px; border: 2px solid #ef4444;">
+            <h3 style="margin-top: 0; color: #ef4444;">✕ Error</h3>
+            <p style="color: var(--ds-text-secondary);">
+              Card avec bordure rouge pour signaler une erreur ou un problème.
+            </p>
+          </div>
+          <div style="background: var(--ds-bg-surface-1); padding: 24px; border-radius: 12px; border: 2px solid #f59e0b;">
+            <h3 style="margin-top: 0; color: #f59e0b;">⚠ Warning</h3>
+            <p style="color: var(--ds-text-secondary);">
+              Card avec bordure orange pour les avertissements.
+            </p>
+          </div>
+        </div>
+      `,
+      'card-glass': `
+        <h2>Card Glass (Glassmorphism)</h2>
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 40px; border-radius: 12px;">
+          <div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 24px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+              <h3 style="margin-top: 0;">Glass Effect</h3>
+              <p style="color: var(--ds-text-secondary);">
+                Effet de verre avec transparence et flou pour un design moderne et élégant.
+              </p>
+            </div>
+            <div style="background: rgba(16,185,129,0.1); backdrop-filter: blur(10px); padding: 24px; border-radius: 12px; border: 1px solid rgba(16,185,129,0.3);">
+              <h3 style="margin-top: 0; color: var(--ds-green-400);">Colored Glass</h3>
+              <p style="color: var(--ds-text-secondary);">
+                Variante avec teinte de couleur.
+              </p>
+            </div>
+          </div>
+        </div>
+      `,
+      'menu-top': `
+        <h2>Top Navigation</h2>
+        <div style="background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 8px; overflow: hidden;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: var(--ds-bg-surface-2); border-bottom: 1px solid var(--ds-border-default);">
+            <div style="font-weight: 700; font-size: 20px;">LOGO</div>
+            <div style="display: flex; gap: 24px;">
+              <a href="#" style="color: var(--ds-green-400); text-decoration: none; font-weight: 600;">Home</a>
+              <a href="#" style="color: var(--ds-text-secondary); text-decoration: none;">Products</a>
+              <a href="#" style="color: var(--ds-text-secondary); text-decoration: none;">About</a>
+              <a href="#" style="color: var(--ds-text-secondary); text-decoration: none;">Contact</a>
+            </div>
+            <button class="ds-btn ds-btn--primary">Login</button>
+          </div>
+          <div style="padding: 40px 24px; text-align: center;">
+            <h3>Page Content</h3>
+            <p style="color: var(--ds-text-secondary);">Le menu est fixe en haut de la page.</p>
+          </div>
+        </div>
+      `,
+      'menu-sidebar': `
+        <h2>Sidebar Navigation</h2>
+        <div style="display: flex; height: 400px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 8px; overflow: hidden;">
+          <div style="width: 240px; background: var(--ds-bg-surface-2); border-right: 1px solid var(--ds-border-default); padding: 20px;">
+            <div style="font-weight: 700; margin-bottom: 24px;">MENU</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="padding: 10px 12px; background: rgba(16,185,129,0.12); border-radius: 6px; color: var(--ds-green-400); font-weight: 600;">Dashboard</div>
+              <div style="padding: 10px 12px; border-radius: 6px; color: var(--ds-text-secondary);">Analytics</div>
+              <div style="padding: 10px 12px; border-radius: 6px; color: var(--ds-text-secondary);">Settings</div>
+              <div style="padding: 10px 12px; border-radius: 6px; color: var(--ds-text-secondary);">Profile</div>
+            </div>
+          </div>
+          <div style="flex: 1; padding: 24px;">
+            <h3 style="margin-top: 0;">Main Content</h3>
+            <p style="color: var(--ds-text-secondary);">La sidebar est fixe sur le côté gauche.</p>
+          </div>
+        </div>
+      `,
+      'menu-mobile': `
+        <h2>Mobile Navigation</h2>
+        <div style="width: 375px; margin: 0 auto; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 16px; background: var(--ds-bg-surface-2); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ds-border-default);">
+            <div style="font-weight: 700;">LOGO</div>
+            <button style="width: 40px; height: 40px; background: none; border: none; color: var(--ds-text-primary); font-size: 24px; cursor: pointer;">☰</button>
+          </div>
+          <div style="padding: 40px 20px; text-align: center;">
+            <h3>Content</h3>
+          </div>
+          <div style="display: flex; justify-content: space-around; padding: 16px; background: var(--ds-bg-surface-2); border-top: 1px solid var(--ds-border-default);">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--ds-green-400);">
+              <div style="width: 24px; height: 24px; background: var(--ds-green-400); border-radius: 50%;"></div>
+              <span style="font-size: 11px;">Home</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--ds-text-secondary);">
+              <div style="width: 24px; height: 24px; background: var(--ds-text-secondary); border-radius: 50%;"></div>
+              <span style="font-size: 11px;">Search</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--ds-text-secondary);">
+              <div style="width: 24px; height: 24px; background: var(--ds-text-secondary); border-radius: 50%;"></div>
+              <span style="font-size: 11px;">Profile</span>
+            </div>
+          </div>
+        </div>
+      `,
+      'menu-tabs': `
+        <h2>Tabs Navigation</h2>
+        <div style="background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 8px; padding: 20px;">
+          <div style="display: flex; gap: 8px; border-bottom: 2px solid var(--ds-border-default); margin-bottom: 24px;">
+            <button style="padding: 12px 24px; background: none; border: none; border-bottom: 2px solid var(--ds-green-400); margin-bottom: -2px; color: var(--ds-green-400); font-weight: 600; cursor: pointer;">Overview</button>
+            <button style="padding: 12px 24px; background: none; border: none; color: var(--ds-text-secondary); cursor: pointer;">Analytics</button>
+            <button style="padding: 12px 24px; background: none; border: none; color: var(--ds-text-secondary); cursor: pointer;">Reports</button>
+            <button style="padding: 12px 24px; background: none; border: none; color: var(--ds-text-secondary); cursor: pointer;">Settings</button>
+          </div>
+          <div style="padding: 20px;">
+            <h3 style="margin-top: 0;">Tab Content: Overview</h3>
+            <p style="color: var(--ds-text-secondary);">Le contenu change en fonction de l'onglet sélectionné.</p>
+          </div>
+        </div>
+      `,
+      'form-login': `
+        <h2>Login Form</h2>
+        <div style="max-width: 400px; margin: 0 auto; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 12px; padding: 32px;">
+          <h3 style="margin-top: 0; text-align: center;">Connexion</h3>
+          <form style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+              <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500;">Email</label>
+              <input type="email" placeholder="votre@email.com" style="width: 100%; padding: 12px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary); font-size: 14px;" />
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500;">Mot de passe</label>
+              <input type="password" placeholder="••••••••" style="width: 100%; padding: 12px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary); font-size: 14px;" />
+            </div>
+            <button class="ds-btn ds-btn--primary" style="width: 100%; margin-top: 8px;">Se connecter</button>
+            <a href="#" style="text-align: center; font-size: 13px; color: var(--ds-green-400); text-decoration: none;">Mot de passe oublié ?</a>
+          </form>
+        </div>
+      `,
+      'form-inputs': `
+        <h2>Input Fields</h2>
+        <div style="max-width: 500px; margin: 0 auto;">
+          <div class="demo">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500;">Nom complet</label>
+                <input type="text" placeholder="Jean Dupont" style="width: 100%; padding: 12px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary);" />
+              </div>
+              <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500;">Email</label>
+                <input type="email" placeholder="jean@example.com" style="width: 100%; padding: 12px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary);" />
+              </div>
+              <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500;">Message</label>
+                <textarea placeholder="Votre message..." rows="4" style="width: 100%; padding: 12px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary); resize: vertical;"></textarea>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="terms" style="width: 18px; height: 18px; accent-color: var(--ds-green-400);" />
+                <label for="terms" style="font-size: 14px; color: var(--ds-text-secondary);">J'accepte les conditions</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      'form-search': `
+        <h2>Search Bar</h2>
+        <div style="max-width: 600px; margin: 0 auto;">
+          <div class="demo">
+            <div style="position: relative;">
+              <input type="search" placeholder="Rechercher..." style="width: 100%; padding: 14px 48px 14px 48px; background: var(--ds-bg-surface-2); border: 2px solid var(--ds-green-400); border-radius: 24px; color: var(--ds-text-primary); font-size: 15px;" />
+              <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--ds-text-secondary); font-size: 20px;">🔍</span>
+              <button style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); padding: 6px 16px; background: var(--ds-green-400); border: none; border-radius: 16px; color: black; font-weight: 600; cursor: pointer;">Go</button>
+            </div>
+            <div style="margin-top: 24px; display: flex; flex-wrap: gap: 8px;">
+              <span style="padding: 6px 12px; background: var(--ds-bg-surface-3); border-radius: 16px; font-size: 13px; color: var(--ds-text-secondary);">Populaire: Bitcoin</span>
+              <span style="padding: 6px 12px; background: var(--ds-bg-surface-3); border-radius: 16px; font-size: 13px; color: var(--ds-text-secondary);">Mining</span>
+              <span style="padding: 6px 12px; background: var(--ds-bg-surface-3); border-radius: 16px; font-size: 13px; color: var(--ds-text-secondary);">Hashrate</span>
+            </div>
+          </div>
+        </div>
+      `,
+      'form-select': `
+        <h2>Select / Dropdown</h2>
+        <div style="max-width: 500px; margin: 0 auto;">
+          <div class="demo">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500;">Pays</label>
+                <select style="width: 100%; padding: 12px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary); cursor: pointer;">
+                  <option>France</option>
+                  <option>Qatar</option>
+                  <option>États-Unis</option>
+                  <option>Canada</option>
+                </select>
+              </div>
+              <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500;">Type de mining</label>
+                <select style="width: 100%; padding: 12px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-green-400); border-radius: 6px; color: var(--ds-text-primary); cursor: pointer;">
+                  <option selected>Bitcoin (BTC)</option>
+                  <option>Ethereum (ETH)</option>
+                  <option>Litecoin (LTC)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      'alert-success': `
+        <h2>Alerts</h2>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="padding: 16px 20px; background: rgba(16, 185, 129, 0.15); border-left: 4px solid var(--ds-green-400); border-radius: 6px; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">✓</span>
+            <div>
+              <div style="font-weight: 600; color: var(--ds-green-400); margin-bottom: 4px;">Succès</div>
+              <div style="color: var(--ds-text-secondary); font-size: 14px;">L'opération a été effectuée avec succès.</div>
+            </div>
+          </div>
+          <div style="padding: 16px 20px; background: rgba(6, 182, 212, 0.15); border-left: 4px solid #06b6d4; border-radius: 6px; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">ℹ</span>
+            <div>
+              <div style="font-weight: 600; color: #06b6d4; margin-bottom: 4px;">Information</div>
+              <div style="color: var(--ds-text-secondary); font-size: 14px;">Nouvelle mise à jour disponible.</div>
+            </div>
+          </div>
+          <div style="padding: 16px 20px; background: rgba(245, 158, 11, 0.15); border-left: 4px solid #f59e0b; border-radius: 6px; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">⚠</span>
+            <div>
+              <div style="font-weight: 600; color: #f59e0b; margin-bottom: 4px;">Attention</div>
+              <div style="color: var(--ds-text-secondary); font-size: 14px;">Température élevée détectée.</div>
+            </div>
+          </div>
+          <div style="padding: 16px 20px; background: rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444; border-radius: 6px; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">✕</span>
+            <div>
+              <div style="font-weight: 600; color: #ef4444; margin-bottom: 4px;">Erreur</div>
+              <div style="color: var(--ds-text-secondary); font-size: 14px;">Impossible de se connecter au serveur.</div>
+            </div>
+          </div>
+        </div>
+      `,
+      'alert-error': `
+        <h2>Error Alerts</h2>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="padding: 20px; background: rgba(239, 68, 68, 0.2); border: 2px solid #ef4444; border-radius: 8px;">
+            <div style="display: flex; align-items: start; gap: 12px;">
+              <span style="font-size: 28px; color: #ef4444;">⚠</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 700; color: #ef4444; font-size: 16px; margin-bottom: 8px;">Erreur Critique</div>
+                <div style="color: var(--ds-text-secondary); margin-bottom: 12px;">
+                  Le système a rencontré une erreur critique. Veuillez contacter le support technique.
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="ds-btn ds-btn--primary" style="background: #ef4444;">Contacter le support</button>
+                  <button class="ds-btn ds-btn--secondary">Réessayer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      'badge-status': `
+        <h2>Badges & Status</h2>
+        <div class="demo">
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div>
+              <h4 style="margin: 0 0 12px 0; font-size: 14px; color: var(--ds-text-tertiary);">STATUS BADGES</h4>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <span style="padding: 6px 12px; background: var(--ds-green-400); border-radius: 16px; font-size: 12px; font-weight: 600; color: black;">● Live</span>
+                <span style="padding: 6px 12px; background: #ef4444; border-radius: 16px; font-size: 12px; font-weight: 600; color: white;">● Offline</span>
+                <span style="padding: 6px 12px; background: #f59e0b; border-radius: 16px; font-size: 12px; font-weight: 600; color: black;">● Warning</span>
+                <span style="padding: 6px 12px; background: #06b6d4; border-radius: 16px; font-size: 12px; font-weight: 600; color: black;">● Syncing</span>
+                <span style="padding: 6px 12px; background: var(--ds-bg-surface-3); border-radius: 16px; font-size: 12px; font-weight: 600; color: var(--ds-text-secondary);">● Idle</span>
+              </div>
+            </div>
+            <div>
+              <h4 style="margin: 0 0 12px 0; font-size: 14px; color: var(--ds-text-tertiary);">CATEGORY TAGS</h4>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <span style="padding: 4px 10px; background: rgba(16,185,129,0.15); border: 1px solid var(--ds-green-400); border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">MINING</span>
+                <span style="padding: 4px 10px; background: rgba(6,182,212,0.15); border: 1px solid #06b6d4; border-radius: 4px; font-size: 11px; font-weight: 600; color: #06b6d4;">CRYPTO</span>
+                <span style="padding: 4px 10px; background: rgba(139,92,246,0.15); border: 1px solid #8b5cf6; border-radius: 4px; font-size: 11px; font-weight: 600; color: #8b5cf6;">WEB3</span>
+                <span style="padding: 4px 10px; background: rgba(245,158,11,0.15); border: 1px solid #f59e0b; border-radius: 4px; font-size: 11px; font-weight: 600; color: #f59e0b;">HOT</span>
+              </div>
+            </div>
+            <div>
+              <h4 style="margin: 0 0 12px 0; font-size: 14px; color: var(--ds-text-tertiary);">NOTIFICATION BADGES</h4>
+              <div style="display: flex; gap: 24px;">
+                <div style="position: relative;">
+                  <button class="ds-btn ds-btn--secondary">Messages</button>
+                  <span style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: #ef4444; border-radius: 50%; font-size: 11px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center;">5</span>
+                </div>
+                <div style="position: relative;">
+                  <button class="ds-btn ds-btn--secondary">Notifications</button>
+                  <span style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: var(--ds-green-400); border-radius: 50%; font-size: 11px; font-weight: 700; color: black; display: flex; align-items: center; justify-content: center;">12</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      'notification': `
+        <h2>Notifications</h2>
+        <div style="max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;">
+          <div style="padding: 16px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-green-400); border-radius: 8px; position: relative;">
+            <div style="position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: var(--ds-green-400); border-radius: 50%;"></div>
+            <div style="font-weight: 600; margin-bottom: 6px;">Nouveau mineur connecté</div>
+            <div style="font-size: 14px; color: var(--ds-text-secondary); margin-bottom: 8px;">
+              Un nouveau mineur S21 Hydro a été détecté et ajouté au pool.
+            </div>
+            <div style="font-size: 12px; color: var(--ds-text-tertiary);">Il y a 2 minutes</div>
+          </div>
+          
+          <div style="padding: 16px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-border-default); border-radius: 8px;">
+            <div style="font-weight: 600; margin-bottom: 6px;">Mise à jour du système</div>
+            <div style="font-size: 14px; color: var(--ds-text-secondary); margin-bottom: 8px;">
+              Une nouvelle version du firmware est disponible (v2.4.1).
+            </div>
+            <div style="font-size: 12px; color: var(--ds-text-tertiary);">Il y a 1 heure</div>
+          </div>
+          
+          <div style="padding: 16px; background: var(--ds-bg-surface-2); border: 1px solid var(--ds-border-default); border-radius: 8px; opacity: 0.6;">
+            <div style="font-weight: 600; margin-bottom: 6px;">Maintenance programmée</div>
+            <div style="font-size: 14px; color: var(--ds-text-secondary); margin-bottom: 8px;">
+              Maintenance du système prévue demain à 3h00 UTC.
+            </div>
+            <div style="font-size: 12px; color: var(--ds-text-tertiary);">Il y a 3 heures</div>
+          </div>
+        </div>
+      `
+    };
+
+    function showComponentPreview(componentType) {
+      const previewContent = document.getElementById('previewContent');
+      const template = componentPreviews[componentType];
+      
+      if (template) {
+        previewContent.innerHTML = template;
+        
+        // Animation de transition
+        previewContent.style.transition = 'all 0.3s ease';
+        previewContent.style.opacity = '0';
+        previewContent.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+          previewContent.style.opacity = '1';
+          previewContent.style.transform = 'translateY(0)';
+        }, 50);
+      }
+    }
 
     function openPaletteModal(paletteId) {
       currentPalette = paletteId;
@@ -805,6 +1536,202 @@
       if (e.target.id === 'paletteModal') {
         closePaletteModal();
       }
+    });
+
+    // ===== NEW FLUID UX FEATURES =====
+    
+    // Scroll to section with smooth animation
+    function scrollToSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Update active tab
+        document.querySelectorAll('.quick-nav__tab').forEach(tab => {
+          tab.classList.remove('is-active');
+        });
+        event.target.classList.add('is-active');
+        
+        // Show smart suggestions for this section
+        showSmartSuggestions(sectionId);
+      }
+    }
+
+    // Update selection bar when palette changes
+    function updateSelectionBar(paletteName, colors) {
+      document.getElementById('selectedPaletteName').textContent = paletteName;
+      const preview = document.getElementById('selectedPalettePreview');
+      preview.innerHTML = colors.map(color => 
+        `<div class="selection-bar__color" style="background: ${color};"></div>`
+      ).join('');
+    }
+
+    // Update selected component display
+    function updateSelectedComponent(componentName) {
+      document.getElementById('selectedComponent').textContent = componentName;
+    }
+
+    // Enhanced showComponentPreview with selection bar update
+    const originalShowComponentPreview = showComponentPreview;
+    showComponentPreview = function(componentType) {
+      originalShowComponentPreview(componentType);
+      
+      // Update selection bar
+      const componentNames = {
+        'card-basic': 'Card Basic',
+        'card-gradient': 'Card Gradient',
+        'card-bordered': 'Card Border',
+        'card-glass': 'Card Glass',
+        'menu-top': 'Top Nav',
+        'menu-sidebar': 'Sidebar Nav',
+        'menu-mobile': 'Mobile Nav',
+        'menu-tabs': 'Tabs',
+        'form-login': 'Login Form',
+        'form-inputs': 'Input Fields',
+        'form-search': 'Search Bar',
+        'form-select': 'Dropdown',
+        'alert-success': 'Success Alert',
+        'alert-error': 'Error Alert',
+        'badge-status': 'Badges',
+        'notification': 'Notification'
+      };
+      
+      updateSelectedComponent(componentNames[componentType] || componentType);
+      
+      // Show relevant suggestions
+      showRelevantSuggestions(componentType);
+    };
+
+    // Smart suggestions based on current selection
+    function showSmartSuggestions(sectionId) {
+      const suggestions = document.getElementById('colorSuggestions');
+      if (suggestions && sectionId === 'couleurs') {
+        suggestions.classList.add('is-visible');
+      }
+    }
+
+    function showRelevantSuggestions(componentType) {
+      const suggestions = document.getElementById('colorSuggestions');
+      if (!suggestions) return;
+      
+      const suggestionsList = suggestions.querySelector('.smart-suggestions__list');
+      
+      // Dynamic suggestions based on component
+      const suggestionMap = {
+        'card-glass': [
+          { palette: 'dark-pro', text: '✨ Dark Pro makes glassmorphism shine!' },
+          { palette: 'blue-tech', text: '🌊 Blue Tech creates stunning glass effects' }
+        ],
+        'form-login': [
+          { palette: 'dark-pro', text: '🔐 Dark Pro perfect for modern login forms' },
+          { palette: 'light-clean', text: '☀️ Light Clean for friendly login experience' }
+        ],
+        'menu-sidebar': [
+          { palette: 'dark-pro', text: '📱 Dark Pro ideal for app sidebars' },
+          { palette: 'blue-tech', text: '💼 Blue Tech for professional dashboards' }
+        ]
+      };
+      
+      if (suggestionMap[componentType]) {
+        suggestionsList.innerHTML = suggestionMap[componentType].map(s => 
+          `<div class="smart-suggestions__item" onclick="applySuggestion('${s.palette}', '${componentType}')">
+            <span>${s.text}</span>
+            <span style="font-size: 11px; color: var(--ds-green-400);">Essayer →</span>
+          </div>`
+        ).join('');
+        suggestions.classList.add('is-visible');
+      }
+    }
+
+    // Apply suggestion (palette + component combo)
+    function applySuggestion(paletteId, componentType) {
+      // Apply palette
+      currentPalette = paletteId;
+      const palette = palettes[paletteId];
+      
+      // Update visuals
+      document.querySelectorAll('.palette-card').forEach(card => {
+        card.classList.remove('is-active');
+        if (card.dataset.palette === paletteId) {
+          card.classList.add('is-active');
+        }
+      });
+      
+      // Update selection bar
+      const paletteColors = Object.values(palette.background).slice(0, 3);
+      updateSelectionBar(palette.name, paletteColors);
+      
+      // Apply the theme
+      const root = document.documentElement;
+      root.style.setProperty('--preview-bg', palette.gradient);
+      root.style.setProperty('--ds-bg-canvas', palette.background.bgPrimary);
+      root.style.setProperty('--ds-bg-surface-1', palette.background.bgSecondary);
+      root.style.setProperty('--ds-bg-surface-2', palette.background.bgTertiary);
+      root.style.setProperty('--ds-text-primary', palette.text.textPrimary);
+      root.style.setProperty('--ds-text-secondary', palette.text.textSecondary);
+      root.style.setProperty('--ds-green-400', palette.accents.accentPrimary);
+      
+      // Show component preview
+      if (componentType) {
+        showComponentPreview(componentType);
+      }
+      
+      // Smooth scroll to preview
+      document.querySelector('.preview-zone').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Compare mode (side-by-side comparison)
+    function compareMode() {
+      alert('Compare Mode: Coming soon! Compare 2 palettes side-by-side.');
+    }
+
+    // Export theme
+    function exportTheme() {
+      const palette = palettes[currentPalette];
+      const themeData = {
+        name: palette.name,
+        timestamp: new Date().toISOString(),
+        tokens: {
+          colors: palette,
+          typography: 'Inter + IBM Plex Mono',
+          spacing: 'Comfortable'
+        }
+      };
+      
+      const blob = new Blob([JSON.stringify(themeData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `hearst-theme-${palette.name.toLowerCase().replace(/\s+/g, '-')}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Enhanced palette modal with selection bar update
+    const originalOpenPaletteModal = openPaletteModal;
+    openPaletteModal = function(paletteId) {
+      originalOpenPaletteModal(paletteId);
+      
+      // Update selection bar preview
+      const palette = palettes[paletteId];
+      const colors = [
+        palette.background.bgPrimary,
+        palette.accents.accentPrimary,
+        palette.background.bgSecondary
+      ];
+      updateSelectionBar(palette.name, colors);
+    };
+
+    // Initialize: Show suggestions on load
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const suggestions = document.getElementById('colorSuggestions');
+        if (suggestions) {
+          suggestions.classList.add('is-visible');
+        }
+      }, 1000);
     });
   </script>
 </body>
