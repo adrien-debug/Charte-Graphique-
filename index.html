@@ -737,70 +737,109 @@
           <h2 class="token-section__title">⭐ Favoris - Configurations</h2>
         </div>
         
-        <div class="palette-grid">
+        <!-- Full Width Config Cards -->
+        <div style="display: flex; flex-direction: column; gap: 16px; padding: 20px;">
+          
           <!-- Configuration 1: Dark Pro + Modern + Confortable -->
-          <div class="palette-card" onclick="applyConfigPreset('config1')" style="min-height: 160px;">
-            <div style="padding: 16px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+          <div onclick="applyConfigPreset('config1')" style="
+            width: 100%;
+            padding: 24px;
+            background: var(--ds-bg-surface-1);
+            border: 2px solid var(--ds-border-default);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          " onmouseover="this.style.borderColor='var(--ds-green-400)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.2)'" onmouseout="this.style.borderColor='var(--ds-border-default)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
               <div>
-                <div style="font-weight: 700; font-size: 16px; color: var(--ds-text-primary); margin-bottom: 12px;">⚙️ Config 1</div>
-                <div style="font-size: 12px; color: var(--ds-text-secondary); margin-bottom: 12px;">Dark Pro • Modern • Confortable</div>
+                <div style="font-weight: 700; font-size: 18px; color: var(--ds-text-primary); margin-bottom: 6px;">⚙️ Configuration 1 - Dark Professional</div>
+                <div style="font-size: 13px; color: var(--ds-text-secondary);">Dark Pro • Modern • Confortable</div>
               </div>
-              <div style="display: flex; gap: 4px; margin-top: 8px;">
-                <div style="width: 100%; height: 6px; background: #0f172a; border-radius: 3px;"></div>
-                <div style="width: 100%; height: 6px; background: #10b981; border-radius: 3px;"></div>
-                <div style="width: 100%; height: 6px; background: #1e293b; border-radius: 3px;"></div>
-              </div>
+              <div style="font-size: 24px;">→</div>
             </div>
-            <div class="palette-card__name">Dark Professional</div>
+            <div style="display: flex; gap: 6px; margin-top: 12px;">
+              <div style="flex: 1; height: 8px; background: #0f172a; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #1e293b; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #10b981; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #f8fafc; border-radius: 4px;"></div>
+            </div>
           </div>
 
           <!-- Configuration 2: Light Clean + Modern + Confortable -->
-          <div class="palette-card" onclick="applyConfigPreset('config2')" style="min-height: 160px;">
-            <div style="padding: 16px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+          <div onclick="applyConfigPreset('config2')" style="
+            width: 100%;
+            padding: 24px;
+            background: var(--ds-bg-surface-1);
+            border: 2px solid var(--ds-border-default);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          " onmouseover="this.style.borderColor='var(--ds-green-400)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.2)'" onmouseout="this.style.borderColor='var(--ds-border-default)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
               <div>
-                <div style="font-weight: 700; font-size: 16px; color: var(--ds-text-primary); margin-bottom: 12px;">⚙️ Config 2</div>
-                <div style="font-size: 12px; color: var(--ds-text-secondary); margin-bottom: 12px;">Light Clean • Modern • Confortable</div>
+                <div style="font-weight: 700; font-size: 18px; color: var(--ds-text-primary); margin-bottom: 6px;">⚙️ Configuration 2 - Light & Clean</div>
+                <div style="font-size: 13px; color: var(--ds-text-secondary);">Light Clean • Modern • Confortable</div>
               </div>
-              <div style="display: flex; gap: 4px; margin-top: 8px;">
-                <div style="width: 100%; height: 6px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 3px;"></div>
-                <div style="width: 100%; height: 6px; background: #0ea5e9; border-radius: 3px;"></div>
-                <div style="width: 100%; height: 6px; background: #f1f5f9; border-radius: 3px;"></div>
-              </div>
+              <div style="font-size: 24px;">→</div>
             </div>
-            <div class="palette-card__name">Light & Clean</div>
+            <div style="display: flex; gap: 6px; margin-top: 12px;">
+              <div style="flex: 1; height: 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #f1f5f9; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #0ea5e9; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #e0f2fe; border-radius: 4px;"></div>
+            </div>
           </div>
 
           <!-- Configuration 3: Blue Tech + System + Compact -->
-          <div class="palette-card" onclick="applyConfigPreset('config3')" style="min-height: 160px;">
-            <div style="padding: 16px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+          <div onclick="applyConfigPreset('config3')" style="
+            width: 100%;
+            padding: 24px;
+            background: var(--ds-bg-surface-1);
+            border: 2px solid var(--ds-border-default);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          " onmouseover="this.style.borderColor='var(--ds-green-400)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.2)'" onmouseout="this.style.borderColor='var(--ds-border-default)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
               <div>
-                <div style="font-weight: 700; font-size: 16px; color: var(--ds-text-primary); margin-bottom: 12px;">⚙️ Config 3</div>
-                <div style="font-size: 12px; color: var(--ds-text-secondary); margin-bottom: 12px;">Blue Tech • System • Compact</div>
+                <div style="font-weight: 700; font-size: 18px; color: var(--ds-text-primary); margin-bottom: 6px;">⚙️ Configuration 3 - Tech Dashboard</div>
+                <div style="font-size: 13px; color: var(--ds-text-secondary);">Blue Tech • System • Compact</div>
               </div>
-              <div style="display: flex; gap: 4px; margin-top: 8px;">
-                <div style="width: 100%; height: 6px; background: #0c4a6e; border-radius: 3px;"></div>
-                <div style="width: 100%; height: 6px; background: #06b6d4; border-radius: 3px;"></div>
-                <div style="width: 100%; height: 6px; background: #075985; border-radius: 3px;"></div>
-              </div>
+              <div style="font-size: 24px;">→</div>
             </div>
-            <div class="palette-card__name">Tech Dashboard</div>
+            <div style="display: flex; gap: 6px; margin-top: 12px;">
+              <div style="flex: 1; height: 8px; background: #0c4a6e; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #075985; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #06b6d4; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #e0f2fe; border-radius: 4px;"></div>
+            </div>
           </div>
 
           <!-- Configuration 4: Green Mining + Modern + Compact -->
-          <div class="palette-card" onclick="applyConfigPreset('config4')" style="min-height: 160px;">
-            <div style="padding: 16px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+          <div onclick="applyConfigPreset('config4')" style="
+            width: 100%;
+            padding: 24px;
+            background: var(--ds-bg-surface-1);
+            border: 2px solid var(--ds-border-default);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          " onmouseover="this.style.borderColor='var(--ds-green-400)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.2)'" onmouseout="this.style.borderColor='var(--ds-border-default)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
               <div>
-                <div style="font-weight: 700; font-size: 16px; color: var(--ds-text-primary); margin-bottom: 12px;">⚙️ Config 4</div>
-                <div style="font-size: 12px; color: var(--ds-text-secondary); margin-bottom: 12px;">Green Mining • Modern • Compact</div>
+                <div style="font-weight: 700; font-size: 18px; color: var(--ds-text-primary); margin-bottom: 6px;">⚙️ Configuration 4 - Mining Ops</div>
+                <div style="font-size: 13px; color: var(--ds-text-secondary);">Green Mining • Modern • Compact</div>
               </div>
-              <div style="display: flex; gap: 4px; margin-top: 8px;">
-                <div style="width: 100%; height: 6px; background: #052e16; border-radius: 3px;"></div>
-                <div style="width: 100%; height: 6px; background: #22c55e; border-radius: 3px;"></div>
-                <div style="width: 100%; height: 6px; background: #14532d; border-radius: 3px;"></div>
-              </div>
+              <div style="font-size: 24px;">→</div>
             </div>
-            <div class="palette-card__name">Mining Ops</div>
+            <div style="display: flex; gap: 6px; margin-top: 12px;">
+              <div style="flex: 1; height: 8px; background: #052e16; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #14532d; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #22c55e; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 8px; background: #dcfce7; border-radius: 4px;"></div>
+            </div>
           </div>
+
         </div>
 
         <button class="add-button" onclick="openCustomConfigCreator()">
