@@ -722,13 +722,13 @@
 
     <!-- Quick Navigation Tabs -->
     <div class="quick-nav">
-      <button class="quick-nav__tab is-active" onclick="scrollToSection('couleurs')">🎨 Couleurs</button>
-      <button class="quick-nav__tab" onclick="scrollToSection('typographie')">Aa Typographie</button>
-      <button class="quick-nav__tab" onclick="scrollToSection('espacements')">↔️ Espacements</button>
-      <button class="quick-nav__tab" onclick="scrollToSection('boxes')">📦 Boxes</button>
-      <button class="quick-nav__tab" onclick="scrollToSection('menu')">☰ Menu</button>
-      <button class="quick-nav__tab" onclick="scrollToSection('forms')">📝 Forms</button>
-      <button class="quick-nav__tab" onclick="scrollToSection('alerts')">🔔 Alerts</button>
+      <button class="quick-nav__tab is-active" onclick="showOnlySection('couleurs')">🎨 Couleurs</button>
+      <button class="quick-nav__tab" onclick="showOnlySection('typographie')">Aa Typographie</button>
+      <button class="quick-nav__tab" onclick="showOnlySection('espacements')">↔️ Espacements</button>
+      <button class="quick-nav__tab" onclick="showOnlySection('boxes')">📦 Boxes</button>
+      <button class="quick-nav__tab" onclick="showOnlySection('menu')">☰ Menu</button>
+      <button class="quick-nav__tab" onclick="showOnlySection('forms')">📝 Forms</button>
+      <button class="quick-nav__tab" onclick="showOnlySection('alerts')">🔔 Alerts</button>
     </div>
 
     <!-- Sidebar de sélection -->
@@ -1849,20 +1849,33 @@
     // ===== NEW FLUID UX FEATURES =====
     
     // Scroll to section with smooth animation
-    function scrollToSection(sectionId) {
-      const section = document.getElementById(sectionId);
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Show ONLY the selected section, hide all others
+    function showOnlySection(sectionId) {
+      // Hide ALL sections first
+      document.querySelectorAll('.token-section').forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Show ONLY the selected section
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.style.display = 'block';
         
-        // Update active tab
-        document.querySelectorAll('.quick-nav__tab').forEach(tab => {
-          tab.classList.remove('is-active');
-        });
-        event.target.classList.add('is-active');
-        
-        // Show smart suggestions for this section
-        showSmartSuggestions(sectionId);
+        // Scroll to top of sidebar
+        const sidebar = document.querySelector('.selector-sidebar');
+        if (sidebar) {
+          sidebar.scrollTop = 0;
+        }
       }
+      
+      // Update active tab
+      document.querySelectorAll('.quick-nav__tab').forEach(tab => {
+        tab.classList.remove('is-active');
+      });
+      event.target.classList.add('is-active');
+      
+      // Show smart suggestions for this section
+      showSmartSuggestions(sectionId);
     }
 
     // Update selection bar when palette changes
@@ -2034,6 +2047,13 @@
 
     // Initialize: Show suggestions on load
     document.addEventListener('DOMContentLoaded', () => {
+      // Initialize: Show only Couleurs section by default
+      document.querySelectorAll('.token-section').forEach(section => {
+        if (section.id !== 'couleurs') {
+          section.style.display = 'none';
+        }
+      });
+      
       setTimeout(() => {
         const suggestions = document.getElementById('colorSuggestions');
         if (suggestions) {
