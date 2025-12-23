@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Design System Hub — IPO-Ready</title>
+  <link rel="stylesheet" href="ds.css" />
+  <style>
+    body { margin: 0; padding: 0; }
+
+    /* Layout hub */
+    .hub { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky; top: 0; height: 100vh;
+      background: var(--ds-bg-surface-1);
+      border-right: 1px solid var(--ds-border-default);
+      padding: var(--ds-space-6);
+      overflow-y: auto;
+    }
+    .sidebar__logo {
+      margin-bottom: var(--ds-space-6);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .sidebar__version {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 6px;
+      background: var(--ds-bg-surface-3);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--ds-text-tertiary);
+    }
+    .nav {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav__item {
+      margin-bottom: 4px;
+    }
+    .nav__link {
+      display: block;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ds-text-secondary);
+      text-decoration: none;
+      transition: background var(--ds-dur-fast), color var(--ds-dur-fast);
+    }
+    .nav__link:hover {
+      background: var(--ds-bg-surface-2);
+      color: var(--ds-text-primary);
+    }
+    .nav__link.is-active {
+      background: rgba(24,169,87,0.12);
+      color: var(--ds-green-400);
+      font-weight: 600;
+    }
+
+    /* Main content */
+    .main {
+      padding: var(--ds-space-8) var(--ds-space-10);
+      max-width: 1200px;
+    }
+
+    /* Section */
+    .ds-section {
+      margin-bottom: var(--ds-space-12);
+      padding-bottom: var(--ds-space-10);
+      border-bottom: 1px solid var(--ds-border-subtle);
+    }
+    .ds-section:last-child {
+      border-bottom: none;
+    }
+    .ds-section__title {
+      margin-bottom: var(--ds-space-6);
+      font-size: 32px;
+    }
+    .ds-section__intro {
+      margin-bottom: var(--ds-space-6);
+      color: var(--ds-text-secondary);
+    }
+
+    /* Color swatches */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .swatch {
+      border: 1px solid var(--ds-border-subtle);
+      border-radius: var(--ds-radius-3);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform var(--ds-dur-fast), border-color var(--ds-dur-fast);
+    }
+    .swatch:hover {
+      transform: translateY(-2px);
+      border-color: var(--ds-border-default);
+    }
+    .swatch__color {
+      height: 80px;
+      width: 100%;
+    }
+    .swatch__info {
+      padding: 10px;
+      background: var(--ds-bg-surface-1);
+    }
+    .swatch__name {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .swatch__hex {
+      font-family: var(--ds-font-mono);
+      font-size: 11px;
+      color: var(--ds-text-tertiary);
+    }
+
+    /* Component demo */
+    .demo {
+      margin-top: var(--ds-space-6);
+      padding: var(--ds-space-6);
+      background: var(--ds-bg-surface-1);
+      border: 1px solid var(--ds-border-subtle);
+      border-radius: var(--ds-radius-3);
+    }
+    .demo__controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: var(--ds-space-6);
+      padding-bottom: var(--ds-space-4);
+      border-bottom: 1px solid var(--ds-border-subtle);
+    }
+    .demo__preview {
+      padding: var(--ds-space-6);
+      border-radius: var(--ds-radius-2);
+      background: var(--ds-bg-canvas);
+    }
+
+    /* Code block */
+    .code-block {
+      position: relative;
+      margin-top: var(--ds-space-4);
+      padding: var(--ds-space-4);
+      background: var(--ds-bg-canvas);
+      border: 1px solid var(--ds-border-subtle);
+      border-radius: var(--ds-radius-2);
+      overflow-x: auto;
+    }
+    .code-block__copy {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 6px 10px;
+      background: var(--ds-bg-surface-2);
+      border: 1px solid var(--ds-border-subtle);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ds-text-secondary);
+      cursor: pointer;
+      transition: background var(--ds-dur-fast), color var(--ds-dur-fast);
+    }
+    .code-block__copy:hover {
+      background: var(--ds-bg-surface-3);
+      color: var(--ds-text-primary);
+    }
+    .code-block__code {
+      font-family: var(--ds-font-mono);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--ds-text-secondary);
+      white-space: pre;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hub { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--ds-border-default);
+      }
+      .main { padding: var(--ds-space-6) var(--ds-space-4); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hub">
+    <!-- Sidebar navigation -->
+    <aside class="sidebar">
+      <div class="sidebar__logo">
+        Design System
+        <span class="sidebar__version">v1.0.0</span>
+      </div>
+
+      <nav>
+        <ul class="nav">
+          <li class="nav__item"><a href="#intro" class="nav__link is-active">Introduction</a></li>
+          <li class="nav__item"><a href="#couleurs" class="nav__link">Couleurs</a></li>
+          <li class="nav__item"><a href="#typographie" class="nav__link">Typographie</a></li>
+          <li class="nav__item"><a href="#espacements" class="nav__link">Espacements</a></li>
+          <li class="nav__item"><a href="#composants" class="nav__link">Composants</a></li>
+          <li class="nav__item"><a href="#grilles" class="nav__link">Grilles</a></li>
+          <li class="nav__item"><a href="#hero" class="nav__link">Hero System</a></li>
+          <li class="nav__item"><a href="#motion" class="nav__link">Motion</a></li>
+          <li class="nav__item"><a href="#3d" class="nav__link">3D / Render</a></li>
+          <li class="nav__item"><a href="#export" class="nav__link">Export</a></li>
+        </ul>
+      </nav>
+
+      <div style="margin-top: var(--ds-space-8); padding-top: var(--ds-space-6); border-top: 1px solid var(--ds-border-subtle);">
+        <p class="ds-micro" style="color: var(--ds-text-tertiary);">
+          Bitcoin Mining Corp<br/>IPO-Ready
+        </p>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <!-- INTRODUCTION -->
+      <section id="intro" class="ds-section">
+        <h1 class="ds-section__title">Design System IPO-Ready</h1>
+        <div class="ds-section__intro">
+          <p>Système de design complet pour société de Bitcoin mining institutionnelle. Thème sombre par défaut, composants financiers, hero impact, tokens structurés, accessibilité WCAG AAA.</p>
+          <p style="margin-top:var(--ds-space-4);">
+            <a href="preview-hero.html" target="_blank" class="ds-btn ds-btn--primary">Preview Hero →</a>
+            <a href="components-preview.html" target="_blank" class="ds-btn ds-btn--secondary" style="margin-left:12px;">Galerie composants</a>
+          </p>
+        </div>
+
+        <div class="demo">
+          <h3 style="margin-bottom:var(--ds-space-4);">Décisions verrouillées</h3>
+          <ul style="color:var(--ds-text-secondary); line-height:1.65;">
+            <li>Thème sombre par défaut (canvas: #0B0D0E)</li>
+            <li>Palette: noir profond + gris industriels + verts techno</li>
+            <li>Typographie: Inter + IBM Plex Mono</li>
+            <li>Dégradés: hero uniquement (optionnels)</li>
+            <li>Contrastes WCAG AAA (ratios calculés)</li>
+            <li>Motion: durées 140/220/360ms, easing standard</li>
+            <li>3D: matériaux PBR industriels, lighting 3-point</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- COULEURS -->
+      <section id="couleurs" class="ds-section">
+        <h2 class="ds-section__title">Couleurs</h2>
+        <div class="ds-section__intro">
+          Palette dark-first. Cliquez sur un swatch pour copier le hex.
+        </div>
+
+        <h3 style="margin-bottom:var(--ds-space-4);">Surfaces</h3>
+        <div class="color-grid">
+          <div class="swatch" onclick="copyToClipboard('#0B0D0E', this)">
+            <div class="swatch__color" style="background:#0B0D0E;"></div>
+            <div class="swatch__info">
+              <div class="swatch__name">Canvas</div>
+              <div class="swatch__hex">#0B0D0E</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyToClipboard('#121518', this)">
+            <div class="swatch__color" style="background:#121518;"></div>
+            <div class="swatch__info">
+              <div class="swatch__name">Surface 1</div>
+              <div class="swatch__hex">#121518</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyToClipboard('#171B1F', this)">
+            <div class="swatch__color" style="background:#171B1F;"></div>
+            <div class="swatch__info">
+              <div class="swatch__name">Surface 2</div>
+              <div class="swatch__hex">#171B1F</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyToClipboard('#F6F7F8', this)">
+            <div class="swatch__color" style="background:#F6F7F8; border:1px solid var(--ds-border-default);"></div>
+            <div class="swatch__info">
+              <div class="swatch__name">White</div>
+              <div class="swatch__hex">#F6F7F8</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:var(--ds-space-8); margin-bottom:var(--ds-space-4);">Verts (accent techno)</h3>
+        <div class="color-grid">
+          <div class="swatch" onclick="copyToClipboard('#05512A', this)">
+            <div class="swatch__color" style="background:#05512A;"></div>
+            <div class="swatch__info">
+              <div class="swatch__name">Green 800</div>
+              <div class="swatch__hex">#05512A</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyToClipboard('#0B6B3A', this)">
+            <div class="swatch__color" style="background:#0B6B3A;"></div>
+            <div class="swatch__info">
+              <div class="swatch__name">Green 700</div>
+              <div class="swatch__hex">#0B6B3A</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyToClipboard('#18A957', this)">
+            <div class="swatch__color" style="background:#18A957;"></div>
+            <div class="swatch__info">
+              <div class="swatch__name">Green 500</div>
+              <div class="swatch__hex">#18A957</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyToClipboard('#6FE3A5', this)">
+            <div class="swatch__color" style="background:#6FE3A5;"></div>
+            <div class="swatch__info">
+              <div class="swatch__name">Green 300</div>
+              <div class="swatch__hex">#6FE3A5</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo" style="margin-top:var(--ds-space-6);">
+          <h4 style="margin-bottom:var(--ds-space-3);">Règles d'usage</h4>
+          <div style="display:grid; gap:12px;">
+            <div style="padding:12px; background:rgba(24,169,87,0.12); border-left:3px solid var(--ds-green-500); border-radius:4px; color:var(--ds-text-secondary);">
+              ✅ Liens sur fond sombre: green-500 (#18A957)
+            </div>
+            <div style="padding:12px; background:rgba(24,169,87,0.12); border-left:3px solid var(--ds-green-500); border-radius:4px; color:var(--ds-text-secondary);">
+              ✅ Liens sur fond clair: green-800 (#05512A) uniquement
+            </div>
+            <div style="padding:12px; background:rgba(180,40,40,0.12); border-left:3px solid var(--ds-red-600); border-radius:4px; color:var(--ds-text-secondary);">
+              ❌ Texte green-500 sur fond clair (ratio insuffisant)
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TYPOGRAPHIE -->
+      <section id="typographie" class="ds-section">
+        <h2 class="ds-section__title">Typographie</h2>
+        <div class="ds-section__intro">
+          Inter (sans-serif) + IBM Plex Mono (données financières)
+        </div>
+
+        <div class="demo">
+          <div style="display:grid; gap:var(--ds-space-6);">
+            <div>
+              <div class="ds-label" style="color:var(--ds-text-tertiary); margin-bottom:8px;">H1 (40px, bold)</div>
+              <h1 style="margin:0;">Heading Level 1</h1>
+            </div>
+            <div>
+              <div class="ds-label" style="color:var(--ds-text-tertiary); margin-bottom:8px;">H2 (32px, bold)</div>
+              <h2 style="margin:0;">Heading Level 2</h2>
+            </div>
+            <div>
+              <div class="ds-label" style="color:var(--ds-text-tertiary); margin-bottom:8px;">H3 (28px, semibold)</div>
+              <h3 style="margin:0;">Heading Level 3</h3>
+            </div>
+            <div>
+              <div class="ds-label" style="color:var(--ds-text-tertiary); margin-bottom:8px;">Body (16px, regular)</div>
+              <p style="margin:0;">Texte courant pour paragraphes, descriptions, contenu éditorial standard. Line-height 1.45.</p>
+            </div>
+            <div>
+              <div class="ds-label" style="color:var(--ds-text-tertiary); margin-bottom:8px;">Data (13px, mono)</div>
+              <p class="ds-data" style="margin:0;">1,234,567.89 | 87.7 MW | 5.98 EH/s</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPOSANTS -->
+      <section id="composants" class="ds-section">
+        <h2 class="ds-section__title">Composants</h2>
+        <div class="ds-section__intro">
+          Boutons, cards, KPI, tables, panels. <a href="components-preview.html" target="_blank">→ Galerie complète</a>
+        </div>
+
+        <h3 style="margin-bottom:var(--ds-space-4);">Buttons</h3>
+        <div class="demo">
+          <div class="demo__preview" style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="ds-btn ds-btn--primary">Primary</button>
+            <button class="ds-btn ds-btn--secondary">Secondary</button>
+            <button class="ds-btn ds-btn--primary" disabled>Disabled</button>
+            <button class="ds-btn ds-btn--primary ds-btn--pill">Pill variant →</button>
+          </div>
+          <div class="code-block">
+            <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+            <pre class="code-block__code">&lt;button class="ds-btn ds-btn--primary"&gt;Primary&lt;/button&gt;
+&lt;button class="ds-btn ds-btn--secondary"&gt;Secondary&lt;/button&gt;</pre>
+          </div>
+        </div>
+
+        <h3 style="margin-top:var(--ds-space-8); margin-bottom:var(--ds-space-4);">KPI / Stats</h3>
+        <div class="demo">
+          <div class="demo__preview" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px;">
+            <div class="ds-kpi">
+              <div class="ds-kpi__label">Hashrate</div>
+              <div class="ds-kpi__value">5.98 EH/s</div>
+              <div class="ds-kpi__meta">MAJ 10:32 UTC</div>
+            </div>
+            <div class="ds-kpi">
+              <div class="ds-kpi__label">Puissance</div>
+              <div class="ds-kpi__value ds-kpi__value--accent">87.7 MW</div>
+              <div class="ds-kpi__meta">Nominal</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HERO SYSTEM -->
+      <section id="hero" class="ds-section">
+        <h2 class="ds-section__title">Hero System</h2>
+        <div class="ds-section__intro">
+          Typographie massive avec contour (outline A/B) + dégradés optionnels.
+          <a href="preview-hero.html" target="_blank" style="margin-left:12px;">→ Preview interactif</a>
+        </div>
+
+        <div class="demo">
+          <div class="demo__preview" style="background:linear-gradient(180deg, rgba(11,13,14,0.55), rgba(11,13,14,0.88)), url('https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=1200&q=75'); background-size:cover; background-position:center; padding:var(--ds-space-10); text-align:center;">
+            <div class="ds-pill" style="margin-bottom:18px;">Qatar Vision 2030</div>
+            <h1 class="heroTitle">
+              <span class="heroTitle__row">
+                <span class="outlineA">Qatar Bitcoin</span>
+              </span>
+              <span class="heroTitle__row">
+                <span class="outlineA gradClip gradGreenCyan">Strategic Reserve</span>
+              </span>
+            </h1>
+            <div class="heroSub">100MW Sovereign Mining Facility</div>
+          </div>
+          <div class="code-block">
+            <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+            <pre class="code-block__code">&lt;h1 class="heroTitle"&gt;
+  &lt;span class="heroTitle__row"&gt;
+    &lt;span class="outlineA"&gt;Qatar Bitcoin&lt;/span&gt;
+  &lt;/span&gt;
+  &lt;span class="heroTitle__row"&gt;
+    &lt;span class="outlineA gradClip gradGreenCyan"&gt;Strategic Reserve&lt;/span&gt;
+  &lt;/span&gt;
+&lt;/h1&gt;</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPORT -->
+      <section id="export" class="ds-section">
+        <h2 class="ds-section__title">Export</h2>
+        <div class="ds-section__intro">
+          Téléchargez les tokens, CSS, ou exemples HTML.
+        </div>
+
+        <div style="display:grid; gap:12px; max-width:500px;">
+          <a href="design-tokens.json" download class="ds-btn ds-btn--primary">⬇ design-tokens.json</a>
+          <a href="ds.css" download class="ds-btn ds-btn--secondary">⬇ ds.css</a>
+          <a href="components-preview.html" download class="ds-btn ds-btn--secondary">⬇ components-preview.html</a>
+          <a href="preview-hero.html" download class="ds-btn ds-btn--secondary">⬇ preview-hero.html</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Copy to clipboard utility
+    function copyToClipboard(text, element) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalBorder = element.style.borderColor;
+        element.style.borderColor = 'var(--ds-green-400)';
+        setTimeout(() => {
+          element.style.borderColor = originalBorder;
+        }, 500);
+      });
+    }
+
+    function copyCode(button) {
+      const codeBlock = button.nextElementSibling;
+      const text = codeBlock.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+          button.textContent = 'Copy';
+        }, 1500);
+      });
+    }
+
+    // Navigation active state
+    const navLinks = document.querySelectorAll('.nav__link');
+    const sections = document.querySelectorAll('.ds-section');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            link.classList.remove('is-active');
+            if (link.getAttribute('href') === `#${id}`) {
+              link.classList.add('is-active');
+            }
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(section => observer.observe(section));
+
+    // Smooth scroll
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (href.startsWith('#')) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+

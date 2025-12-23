@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hero Preview — Design System IPO-Ready</title>
+  <style>
+    :root{
+      /* === DESIGN TOKENS (dark-default) === */
+      --ds-bg-canvas: #0B0D0E;
+      --ds-bg-surface-1: #121518;
+      --ds-bg-surface-2: #171B1F;
+
+      --ds-text-primary: #F6F7F8;
+      --ds-text-secondary: #B5BCC4;
+      --ds-text-tertiary: #8A929B;
+
+      --ds-border-subtle: rgba(246,247,248,.10);
+      --ds-border-default: rgba(246,247,248,.16);
+
+      --ds-green-500: #18A957;
+      --ds-green-300: #6FE3A5;
+
+      --ds-radius-2: 10px;
+      --ds-radius-pill: 999px;
+
+      --ds-shadow-1: 0 1px 0 rgba(11,13,14,0.35), 0 16px 48px rgba(11,13,14,0.55);
+
+      --ds-font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --ds-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      /* Hero typography */
+      --hero-size: clamp(44px, 6.2vw, 88px);
+      --hero-line: 0.98;
+      --hero-tracking: -0.02em;
+
+      /* Outline controls (live adjustable) */
+      --outline-w: 2px;
+      --outline-color: rgba(246,247,248,0.95);
+      --outline-shadow: rgba(11,13,14,0.55);
+
+      /* Gradients */
+      --grad-white-rose: linear-gradient(90deg, #F6F7F8 0%, #F6F7F8 35%, #C77C8D 100%);
+      --grad-green-cyan: linear-gradient(90deg, #18A957 0%, #6FE3A5 55%, #A9F0FF 100%);
+
+      /* Scrim (live adjustable) */
+      --scrim-top: rgba(11,13,14,.55);
+      --scrim-bot: rgba(11,13,14,.78);
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html, body { height:100%; }
+    body{
+      font-family: var(--ds-font-sans);
+      background: var(--ds-bg-canvas);
+      color: var(--ds-text-primary);
+      overflow-x: hidden;
+    }
+
+    /* Layout */
+    .wrap{ min-height:100%; display:flex; flex-direction:column; }
+
+    /* Toolbar interactive (fixed top) */
+    .toolbar{
+      position:fixed; inset:16px 16px auto 16px;
+      z-index:100;
+      display:grid;
+      gap:10px;
+      max-width:min(900px, calc(100vw - 32px));
+      padding:12px;
+      border: 1px solid var(--ds-border-default);
+      background: rgba(18,21,24,.72);
+      backdrop-filter: blur(10px);
+      border-radius: var(--ds-radius-2);
+      box-shadow: var(--ds-shadow-1);
+    }
+    .toolbar__row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    .toolbar__label{
+      font: 600 12px/1.2 var(--ds-font-sans);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--ds-text-secondary);
+    }
+    .ctrl{
+      display:flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border:1px solid var(--ds-border-subtle);
+      border-radius: 10px;
+      background: rgba(23,27,31,.72);
+    }
+    .ctrl select, .ctrl input[type="range"], .ctrl input[type="checkbox"]{
+      accent-color: var(--ds-green-500);
+    }
+    .ctrl select{
+      background: transparent;
+      color: var(--ds-text-primary);
+      border: 1px solid var(--ds-border-subtle);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font: 600 13px/1 var(--ds-font-sans);
+      cursor: pointer;
+    }
+    .ctrl input[type="range"]{
+      width: 100px;
+    }
+    .hint{ color: var(--ds-text-tertiary); font: 500 12px/1.2 var(--ds-font-sans); }
+
+    /* Hero section */
+    .hero{
+      position:relative;
+      min-height: 100vh;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+    .hero__bg{
+      position:absolute; inset:0;
+      background:
+        radial-gradient(1000px 600px at 50% 18%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 60%),
+        linear-gradient(180deg, rgba(11,13,14,0.20) 0%, rgba(11,13,14,0.55) 45%, rgba(11,13,14,0.88) 100%),
+        url("https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=2400&q=75");
+      background-size: cover;
+      background-position: center;
+      filter:saturate(.9) contrast(1.02);
+      transform: scale(1.02);
+      transition: background-image 360ms cubic-bezier(0.2,0,0,1);
+    }
+    .hero__scrim{
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, var(--scrim-top) 0%, rgba(11,13,14,.55) 40%, var(--scrim-bot) 100%);
+      transition: background 220ms cubic-bezier(0.2,0,0,1);
+    }
+    .hero__content{
+      position:relative;
+      width:min(1100px, calc(100vw - 48px));
+      padding: 96px 0 56px 0;
+      text-align:center;
+    }
+
+    /* Pill top */
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: var(--ds-radius-pill);
+      border: 1px solid var(--ds-border-subtle);
+      background: rgba(18,21,24,.55);
+      backdrop-filter: blur(10px);
+      font: 600 11px/1 var(--ds-font-sans);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--ds-text-secondary);
+    }
+
+    /* Hero title system */
+    .heroTitle{
+      margin: 18px 0 10px 0;
+      font: 800 var(--hero-size)/var(--hero-line) var(--ds-font-sans);
+      letter-spacing: var(--hero-tracking);
+    }
+    .heroTitle__row{ display:block; }
+    .heroSub{
+      margin: 12px auto 24px auto;
+      max-width: 62ch;
+      color: var(--ds-text-secondary);
+      font: 500 14px/1.55 var(--ds-font-sans);
+    }
+
+    /* === OUTLINE STYLE A: fill + stroke === */
+    .outlineA{
+      color: var(--ds-text-primary);
+      -webkit-text-stroke: var(--outline-w) var(--outline-color);
+      text-shadow:
+        0 2px 0 rgba(11,13,14,.40),
+        0 14px 50px rgba(11,13,14,.60);
+      transition: -webkit-text-stroke 140ms, text-shadow 140ms;
+    }
+
+    /* === OUTLINE STYLE B: hollow (stroke only) === */
+    .outlineB{
+      color: transparent;
+      -webkit-text-stroke: calc(var(--outline-w) * 1.25) var(--outline-color);
+      text-shadow:
+        0 1px 0 rgba(11,13,14,.35),
+        0 10px 40px rgba(11,13,14,.60);
+      transition: -webkit-text-stroke 140ms, text-shadow 140ms;
+    }
+
+    /* Gradient fill toggles (optional, hero only) */
+    .gradClip{
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gradWhiteRose{ background-image: var(--grad-white-rose); }
+    .gradGreenCyan{ background-image: var(--grad-green-cyan); }
+
+    /* Stats grid */
+    .stats{
+      margin: 24px auto 22px auto;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      width:min(720px, 100%);
+    }
+    .stat{
+      border:1px solid var(--ds-border-subtle);
+      border-radius: 14px;
+      background: rgba(18,21,24,.40);
+      backdrop-filter: blur(8px);
+      padding: 14px 14px;
+      transition: background 140ms, border-color 140ms;
+    }
+    .stat:hover{
+      background: rgba(18,21,24,.50);
+      border-color: var(--ds-border-default);
+    }
+    .stat__v{
+      font: 800 26px/1.1 var(--ds-font-sans);
+      letter-spacing: -0.01em;
+    }
+    .stat__k{
+      margin-top:6px;
+      font: 700 11px/1.2 var(--ds-font-sans);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ds-text-tertiary);
+    }
+    .stat__v.is-accent{ color: var(--ds-green-300); }
+
+    /* CTAs */
+    .ctaRow{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top: 10px; }
+    .btn{
+      height: 40px;
+      padding: 0 14px;
+      border-radius: var(--ds-radius-pill);
+      border: 1px solid var(--ds-border-subtle);
+      background: rgba(18,21,24,.40);
+      color: var(--ds-text-primary);
+      font: 700 13px/1 var(--ds-font-sans);
+      cursor:pointer;
+      transition: transform 140ms cubic-bezier(0.2,0,0,1), background 140ms, border-color 140ms;
+    }
+    .btn:hover{
+      background: rgba(18,21,24,.55);
+      border-color: var(--ds-border-default);
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn--primary{
+      background: rgba(24,169,87,.18);
+      border-color: rgba(24,169,87,.38);
+    }
+    .btn--primary:hover{
+      background: rgba(24,169,87,.24);
+      border-color: rgba(24,169,87,.48);
+    }
+
+    /* Footer micro */
+    .micro{
+      position:absolute;
+      inset:auto 0 14px 0;
+      display:flex;
+      justify-content:space-between;
+      padding: 0 24px;
+      color: rgba(246,247,248,.55);
+      font: 700 10px/1 var(--ds-font-sans);
+      letter-spacing:.18em;
+      text-transform: uppercase;
+      pointer-events:none;
+    }
+    .micro__center{ opacity:.65; }
+
+    @media (max-width: 820px){
+      .toolbar{ position:static; margin: 16px; }
+      .hero__content{ padding-top: 34px; }
+      .stats{ grid-template-columns: 1fr; }
+      .micro{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- Toolbar interactive -->
+    <div class="toolbar" role="region" aria-label="Contrôles de prévisualisation">
+      <div class="toolbar__row">
+        <div class="toolbar__label">Hero H1</div>
+
+        <div class="ctrl">
+          <span class="hint">Contour</span>
+          <select id="outlineStyle" aria-label="Style contour">
+            <option value="outlineA" selected>A — plein + contour</option>
+            <option value="outlineB">B — creux + contour</option>
+          </select>
+        </div>
+
+        <div class="ctrl">
+          <span class="hint">Stroke</span>
+          <input id="strokeW" type="range" min="1" max="4" step="0.5" value="2" />
+          <span class="hint" id="strokeWVal">2.0px</span>
+        </div>
+
+        <div class="ctrl">
+          <label class="hint" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input id="useGrad1" type="checkbox" />
+            Dégradé ligne 1
+          </label>
+        </div>
+
+        <div class="ctrl">
+          <label class="hint" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input id="useGrad2" type="checkbox" checked />
+            Dégradé ligne 2
+          </label>
+        </div>
+      </div>
+
+      <div class="toolbar__row">
+        <div class="toolbar__label">Scrim</div>
+        <div class="ctrl">
+          <span class="hint">Top</span>
+          <input id="scrimTop" type="range" min="0.35" max="0.80" step="0.01" value="0.55" />
+          <span class="hint" id="scrimTopVal">0.55</span>
+        </div>
+        <div class="ctrl">
+          <span class="hint">Bas</span>
+          <input id="scrimBot" type="range" min="0.55" max="0.95" step="0.01" value="0.78" />
+          <span class="hint" id="scrimBotVal">0.78</span>
+        </div>
+        <div class="ctrl">
+          <span class="hint">Image</span>
+          <select id="bgPreset" aria-label="Image background">
+            <option value="containers" selected>Containers</option>
+            <option value="datacenter">Datacenter</option>
+            <option value="solid">Sans image</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero preview -->
+    <main class="hero">
+      <div class="hero__bg" id="heroBg"></div>
+      <div class="hero__scrim" id="heroScrim"></div>
+
+      <div class="hero__content">
+        <div style="display:flex; justify-content:center; margin-bottom:18px;">
+          <div class="pill">Qatar Vision 2030</div>
+        </div>
+
+        <h1 class="heroTitle" aria-label="Titre principal">
+          <span class="heroTitle__row">
+            <span id="t1" class="outlineA">Qatar Bitcoin</span>
+          </span>
+          <span class="heroTitle__row">
+            <span id="t2" class="outlineA gradClip gradGreenCyan">Strategic Reserve</span>
+          </span>
+        </h1>
+
+        <div class="heroSub">
+          100MW Sovereign Mining Facility
+        </div>
+
+        <section class="stats" aria-label="Statistiques clés">
+          <div class="stat">
+            <div class="stat__v">48</div>
+            <div class="stat__k">Containers</div>
+          </div>
+          <div class="stat">
+            <div class="stat__v is-accent">100%</div>
+            <div class="stat__k">Green Energy</div>
+          </div>
+          <div class="stat">
+            <div class="stat__v">2025</div>
+            <div class="stat__k">Launch</div>
+          </div>
+        </section>
+
+        <div class="ctaRow" aria-label="Actions">
+          <button class="btn btn--primary">Dashboard →</button>
+          <button class="btn">3D Tour</button>
+        </div>
+      </div>
+
+      <div class="micro" aria-hidden="true">
+        <div>Zero CO₂ Emissions</div>
+        <div class="micro__center">—</div>
+        <div>Hearst Corporation</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+
+    // Controls
+    const outlineStyle = document.getElementById('outlineStyle');
+    const strokeW = document.getElementById('strokeW');
+    const strokeWVal = document.getElementById('strokeWVal');
+
+    const useGrad1 = document.getElementById('useGrad1');
+    const useGrad2 = document.getElementById('useGrad2');
+
+    const scrimTop = document.getElementById('scrimTop');
+    const scrimBot = document.getElementById('scrimBot');
+    const scrimTopVal = document.getElementById('scrimTopVal');
+    const scrimBotVal = document.getElementById('scrimBotVal');
+
+    const bgPreset = document.getElementById('bgPreset');
+    const heroBg = document.getElementById('heroBg');
+
+    const t1 = document.getElementById('t1');
+    const t2 = document.getElementById('t2');
+
+    // Apply outline class
+    function applyOutlineClass(){
+      const cls = outlineStyle.value;
+      t1.classList.remove('outlineA','outlineB');
+      t2.classList.remove('outlineA','outlineB');
+      t1.classList.add(cls);
+      t2.classList.add(cls);
+    }
+
+    // Apply stroke width
+    function applyStroke(){
+      const w = Number(strokeW.value).toFixed(1);
+      root.style.setProperty('--outline-w', w + 'px');
+      strokeWVal.textContent = w + 'px';
+    }
+
+    // Apply gradients
+    function applyGradients(){
+      // Ligne 1
+      t1.classList.toggle('gradClip', useGrad1.checked);
+      t1.classList.toggle('gradWhiteRose', useGrad1.checked);
+      if(!useGrad1.checked){
+        t1.classList.remove('gradWhiteRose');
+      }
+
+      // Ligne 2
+      t2.classList.toggle('gradClip', useGrad2.checked);
+      t2.classList.toggle('gradGreenCyan', useGrad2.checked);
+      if(!useGrad2.checked){
+        t2.classList.remove('gradGreenCyan');
+      }
+    }
+
+    // Apply scrim
+    function applyScrim(){
+      const topA = Number(scrimTop.value).toFixed(2);
+      const botA = Number(scrimBot.value).toFixed(2);
+      root.style.setProperty('--scrim-top', `rgba(11,13,14,${topA})`);
+      root.style.setProperty('--scrim-bot', `rgba(11,13,14,${botA})`);
+      scrimTopVal.textContent = topA;
+      scrimBotVal.textContent = botA;
+    }
+
+    // Apply background preset
+    function applyBg(){
+      const v = bgPreset.value;
+      if(v === 'containers'){
+        heroBg.style.backgroundImage =
+          'radial-gradient(1000px 600px at 50% 18%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 60%),' +
+          'linear-gradient(180deg, rgba(11,13,14,0.20) 0%, rgba(11,13,14,0.55) 45%, rgba(11,13,14,0.88) 100%),' +
+          'url("https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=2400&q=75")';
+      } else if(v === 'datacenter'){
+        heroBg.style.backgroundImage =
+          'radial-gradient(1000px 600px at 50% 18%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 60%),' +
+          'linear-gradient(180deg, rgba(11,13,14,0.20) 0%, rgba(11,13,14,0.55) 45%, rgba(11,13,14,0.88) 100%),' +
+          'url("https://images.unsplash.com/photo-1551703599-6b3e8379aa8f?auto=format&fit=crop&w=2400&q=75")';
+      } else {
+        heroBg.style.backgroundImage =
+          'radial-gradient(900px 520px at 50% 18%, rgba(255,255,255,.06) 0%, rgba(255,255,255,0) 60%),' +
+          'linear-gradient(180deg, rgba(18,21,24,1) 0%, rgba(11,13,14,1) 100%)';
+      }
+      heroBg.style.backgroundSize = 'cover';
+      heroBg.style.backgroundPosition = 'center';
+    }
+
+    // Init
+    applyOutlineClass();
+    applyStroke();
+    applyGradients();
+    applyScrim();
+    applyBg();
+
+    // Bind events
+    outlineStyle.addEventListener('change', applyOutlineClass);
+    strokeW.addEventListener('input', applyStroke);
+    useGrad1.addEventListener('change', applyGradients);
+    useGrad2.addEventListener('change', applyGradients);
+    scrimTop.addEventListener('input', applyScrim);
+    scrimBot.addEventListener('input', applyScrim);
+    bgPreset.addEventListener('change', applyBg);
+  </script>
+</body>
+</html>
+
+
+
+
+

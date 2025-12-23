@@ -1,0 +1,1244 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Builder — Bloomberg-style Charts</title>
+  <link rel="stylesheet" href="ds.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; font-family: var(--ds-font-sans); }
+
+    /* Layout 3 colonnes */
+    .builder-advanced {
+      display: grid;
+      grid-template-columns: 320px 1fr 420px;
+      grid-template-rows: 64px 1fr;
+      height: 100vh;
+    }
+
+    /* Header */
+    .builder-header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--ds-space-6);
+      background: var(--ds-bg-surface-1);
+      border-bottom: 1px solid var(--ds-border-default);
+    }
+    .builder-header__title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .builder-header__badge {
+      padding: 4px 8px;
+      background: var(--ds-green-700);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--ds-text-primary);
+    }
+
+    /* Sidebar gauche (steps) */
+    .sidebar-left {
+      background: var(--ds-bg-surface-1);
+      border-right: 1px solid var(--ds-border-default);
+      overflow-y: auto;
+      padding: var(--ds-space-6);
+    }
+    .step {
+      padding: 14px;
+      margin-bottom: 8px;
+      border-radius: var(--ds-radius-3);
+      border: 1px solid var(--ds-border-subtle);
+      background: var(--ds-bg-canvas);
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+    }
+    .step:hover {
+      background: var(--ds-bg-surface-2);
+      border-color: var(--ds-border-default);
+    }
+    .step.is-active {
+      background: rgba(24,169,87,0.12);
+      border-color: var(--ds-green-500);
+      border-width: 2px;
+    }
+    .step.is-done {
+      background: var(--ds-bg-surface-2);
+      border-left: 3px solid var(--ds-green-500);
+    }
+    .step__number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--ds-bg-surface-3);
+      color: var(--ds-text-tertiary);
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 10px;
+    }
+    .step.is-active .step__number {
+      background: var(--ds-green-500);
+      color: var(--ds-bg-canvas);
+    }
+    .step__title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .step__desc {
+      font-size: 11px;
+      color: var(--ds-text-tertiary);
+      margin-top: 4px;
+    }
+
+    /* Preview central */
+    .preview-main {
+      background: var(--ds-bg-canvas);
+      overflow-y: auto;
+      padding: var(--ds-space-8);
+    }
+    .preview-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--ds-space-6);
+      padding-bottom: var(--ds-space-4);
+      border-bottom: 1px solid var(--ds-border-subtle);
+    }
+    .mode-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--ds-border-subtle);
+      background: var(--ds-bg-surface-1);
+      color: var(--ds-text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+    }
+    .mode-btn:hover { background: var(--ds-bg-surface-2); }
+    .mode-btn.is-active {
+      background: var(--ds-green-700);
+      border-color: var(--ds-green-700);
+      color: var(--ds-text-primary);
+    }
+
+    /* Sidebar droite (config) */
+    .sidebar-right {
+      background: var(--ds-bg-surface-1);
+      border-left: 1px solid var(--ds-border-default);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .config-panel {
+      flex: 1;
+      padding: var(--ds-space-6);
+    }
+    .config-panel__title {
+      margin-bottom: var(--ds-space-6);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .config-section {
+      margin-bottom: var(--ds-space-8);
+    }
+    .config-section__title {
+      margin-bottom: var(--ds-space-4);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ds-text-tertiary);
+    }
+
+    /* Options cards */
+    .option-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border-radius: var(--ds-radius-2);
+      border: 1px solid var(--ds-border-subtle);
+      background: var(--ds-bg-canvas);
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+    }
+    .option-card:hover {
+      background: var(--ds-bg-surface-2);
+      border-color: var(--ds-border-default);
+    }
+    .option-card.is-selected {
+      background: rgba(24,169,87,0.12);
+      border-color: var(--ds-green-500);
+      border-width: 2px;
+      padding: 13px;
+    }
+    .option-card__radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--ds-border-default);
+      background: var(--ds-bg-canvas);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .option-card.is-selected .option-card__radio {
+      background: var(--ds-green-500);
+      border-color: var(--ds-green-500);
+      box-shadow: inset 0 0 0 3px var(--ds-bg-canvas);
+    }
+    .option-card__title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .option-card__desc {
+      font-size: 11px;
+      color: var(--ds-text-tertiary);
+      line-height: 1.4;
+    }
+    .option-card__preview {
+      margin-top: 8px;
+      height: 40px;
+      border-radius: 4px;
+      border: 1px solid var(--ds-border-subtle);
+    }
+
+    /* Color swatches */
+    .swatch-grid {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--ds-border-subtle);
+    }
+
+    /* Sliders */
+    .slider-group {
+      margin-bottom: var(--ds-space-4);
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ds-text-secondary);
+    }
+    .slider-value {
+      color: var(--ds-green-400);
+      font-family: var(--ds-font-mono);
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--ds-bg-surface-3);
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--ds-green-500);
+      cursor: pointer;
+    }
+
+    /* Navigation */
+    .step-nav {
+      display: flex;
+      gap: 12px;
+      padding: var(--ds-space-6);
+      border-top: 1px solid var(--ds-border-subtle);
+      background: var(--ds-bg-surface-2);
+    }
+
+    /* Chart styles Bloomberg */
+    .chart-container {
+      position: relative;
+      margin-bottom: var(--ds-space-8);
+      padding: var(--ds-space-6);
+      background: var(--ds-bg-surface-1);
+      border: 1px solid var(--ds-border-default);
+      border-radius: var(--ds-radius-3);
+    }
+    .chart-title {
+      margin-bottom: var(--ds-space-4);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--ds-text-secondary);
+    }
+    .chart-meta {
+      display: flex;
+      gap: var(--ds-space-6);
+      margin-bottom: var(--ds-space-4);
+      font-size: 11px;
+      color: var(--ds-text-tertiary);
+    }
+    .chart-meta__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chart-meta__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* Dashboard grid Bloomberg style */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-bottom: var(--ds-space-8);
+    }
+    .dashboard-card {
+      padding: var(--ds-space-5);
+      background: var(--ds-bg-surface-1);
+      border: 1px solid var(--ds-border-default);
+      border-radius: var(--ds-radius-3);
+    }
+    .dashboard-card--span-3 { grid-column: span 3; }
+    .dashboard-card--span-4 { grid-column: span 4; }
+    .dashboard-card--span-6 { grid-column: span 6; }
+    .dashboard-card--span-8 { grid-column: span 8; }
+    .dashboard-card--span-12 { grid-column: span 12; }
+
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ds-text-tertiary);
+    }
+    .kpi-change {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .kpi-change--up { color: var(--ds-green-400); }
+    .kpi-change--down { color: var(--ds-red-400); }
+
+    /* Ticker Bloomberg style */
+    .ticker {
+      display: flex;
+      overflow: hidden;
+      padding: 12px;
+      background: var(--ds-bg-surface-2);
+      border: 1px solid var(--ds-border-default);
+      border-radius: var(--ds-radius-2);
+      margin-bottom: var(--ds-space-6);
+    }
+    .ticker__item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 var(--ds-space-4);
+      border-right: 1px solid var(--ds-border-subtle);
+      white-space: nowrap;
+    }
+    .ticker__symbol {
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--ds-font-mono);
+    }
+    .ticker__price {
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--ds-font-mono);
+    }
+    .ticker__change {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .ticker__change--up {
+      background: rgba(24,169,87,0.18);
+      color: var(--ds-green-400);
+    }
+    .ticker__change--down {
+      background: rgba(180,40,40,0.18);
+      color: var(--ds-red-400);
+    }
+
+    @media (max-width: 1400px) {
+      .builder-advanced {
+        grid-template-columns: 280px 1fr 360px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="builder-advanced">
+    <!-- Header -->
+    <header class="builder-header">
+      <div class="builder-header__title">
+        Advanced Builder
+        <span class="builder-header__badge">BLOOMBERG STYLE</span>
+      </div>
+      <div style="display:flex; gap:12px;">
+        <button class="ds-btn ds-btn--secondary" onclick="resetBuilder()">Reset</button>
+        <button class="ds-btn ds-btn--primary" onclick="exportFull()">Export complet →</button>
+      </div>
+    </header>
+
+    <!-- Sidebar gauche (steps) -->
+    <aside class="sidebar-left">
+      <div class="step is-active" data-step="1" onclick="goToStep(1)">
+        <span class="step__number">1</span>
+        <div>
+          <div class="step__title">Palette couleurs</div>
+          <div class="step__desc">8 palettes pro + custom picker</div>
+        </div>
+      </div>
+
+      <div class="step" data-step="2" onclick="goToStep(2)">
+        <span class="step__number">2</span>
+        <div>
+          <div class="step__title">Typographie avancée</div>
+          <div class="step__desc">5 familles + échelle custom</div>
+        </div>
+      </div>
+
+      <div class="step" data-step="3" onclick="goToStep(3)">
+        <span class="step__number">3</span>
+        <div>
+          <div class="step__title">Layout & grilles</div>
+          <div class="step__desc">4 systèmes + espacements</div>
+        </div>
+      </div>
+
+      <div class="step" data-step="4" onclick="goToStep(4)">
+        <span class="step__number">4</span>
+        <div>
+          <div class="step__title">Graphiques financiers</div>
+          <div class="step__desc">Line, Bar, Candlestick, Heatmap</div>
+        </div>
+      </div>
+
+      <div class="step" data-step="5" onclick="goToStep(5)">
+        <span class="step__number">5</span>
+        <div>
+          <div class="step__title">Composants UI</div>
+          <div class="step__desc">Buttons, cards, KPI, tables, tickers</div>
+        </div>
+      </div>
+
+      <div class="step" data-step="6" onclick="goToStep(6)">
+        <span class="step__number">6</span>
+        <div>
+          <div class="step__title">Hero system</div>
+          <div class="step__desc">4 styles + dégradés + outline</div>
+        </div>
+      </div>
+
+      <div class="step" data-step="7" onclick="goToStep(7)">
+        <span class="step__number">7</span>
+        <div>
+          <div class="step__title">Dashboard templates</div>
+          <div class="step__desc">Bloomberg, finance, mining, ops</div>
+        </div>
+      </div>
+
+      <div class="step" data-step="8" onclick="goToStep(8)">
+        <span class="step__number">8</span>
+        <div>
+          <div class="step__title">Export final</div>
+          <div class="step__desc">HTML, CSS, JSON, tokens</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Preview central -->
+    <main class="preview-main" id="previewMain">
+      <div class="preview-toolbar">
+        <div style="font-size:14px; font-weight:700; color:var(--ds-text-secondary);">LIVE PREVIEW</div>
+        <div style="display:flex; gap:8px;">
+          <button class="mode-btn is-active" data-mode="desktop" onclick="setMode('desktop')">Desktop</button>
+          <button class="mode-btn" data-mode="tablet" onclick="setMode('tablet')">Tablet</button>
+          <button class="mode-btn" data-mode="mobile" onclick="setMode('mobile')">Mobile</button>
+        </div>
+      </div>
+
+      <!-- Dynamic content loaded here -->
+      <div id="previewContent"></div>
+    </main>
+
+    <!-- Sidebar droite (config) -->
+    <aside class="sidebar-right">
+      <div class="config-panel" id="configPanel">
+        <!-- Dynamic config loaded here -->
+      </div>
+
+      <div class="step-nav">
+        <button class="ds-btn ds-btn--secondary" style="flex:1;" id="btnPrev" onclick="prevStep()">← Prev</button>
+        <button class="ds-btn ds-btn--primary" style="flex:1;" id="btnNext" onclick="nextStep()">Next →</button>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // === STATE ===
+    let currentStep = 1;
+    const config = {
+      palette: 'dark-bloomberg',
+      typography: 'inter-mono',
+      layout: 'grid-12',
+      chartStyle: 'line-area',
+      components: 'full-bloomberg',
+      hero: 'outline-gradient',
+      dashboard: 'bloomberg-terminal',
+      // Advanced
+      accentColor: '#18A957',
+      bgCanvas: '#0B0D0E',
+      gridSize: 12,
+      fontSize: 16,
+      chartThickness: 2
+    };
+
+    // === INIT ===
+    document.addEventListener('DOMContentLoaded', () => {
+      loadConfig();
+      goToStep(1);
+    });
+
+    // === NAVIGATION ===
+    function goToStep(step) {
+      if (step < 1 || step > 8) return;
+      currentStep = step;
+      
+      document.querySelectorAll('.step').forEach(s => {
+        s.classList.remove('is-active');
+        if (parseInt(s.dataset.step) === step) {
+          s.classList.add('is-active');
+        }
+      });
+
+      renderConfig(step);
+      renderPreview();
+      
+      document.getElementById('btnPrev').disabled = step === 1;
+      document.getElementById('btnNext').textContent = step === 8 ? 'Terminer ✓' : 'Next →';
+    }
+
+    function nextStep() {
+      if (currentStep < 8) {
+        document.querySelector(`.step[data-step="${currentStep}"]`)?.classList.add('is-done');
+        goToStep(currentStep + 1);
+      } else {
+        exportFull();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) goToStep(currentStep - 1);
+    }
+
+    // === RENDER CONFIG (sidebar droite) ===
+    function renderConfig(step) {
+      const panel = document.getElementById('configPanel');
+      
+      switch(step) {
+        case 1: panel.innerHTML = renderPaletteConfig(); break;
+        case 2: panel.innerHTML = renderTypoConfig(); break;
+        case 3: panel.innerHTML = renderLayoutConfig(); break;
+        case 4: panel.innerHTML = renderChartConfig(); break;
+        case 5: panel.innerHTML = renderComponentsConfig(); break;
+        case 6: panel.innerHTML = renderHeroConfig(); break;
+        case 7: panel.innerHTML = renderDashboardConfig(); break;
+        case 8: panel.innerHTML = renderExportConfig(); break;
+      }
+    }
+
+    // === STEP 1: PALETTE (8 options) ===
+    function renderPaletteConfig() {
+      const palettes = [
+        { id: 'dark-bloomberg', name: 'Dark Bloomberg', desc: 'Noir + orange Bloomberg', colors: ['#0B0D0E', '#1A1D21', '#FF6B00', '#F6F7F8'] },
+        { id: 'dark-reuters', name: 'Dark Reuters', desc: 'Bleu marine profond', colors: ['#001E3C', '#0A2540', '#2E7D32', '#F6F7F8'] },
+        { id: 'dark-ftse', name: 'Dark FTSE', desc: 'Noir + violet finance', colors: ['#0E0C0F', '#1C1820', '#A855F7', '#F6F7F8'] },
+        { id: 'dark-nasdaq', name: 'Dark NASDAQ', desc: 'Noir + cyan tech', colors: ['#0A0D12', '#151820', '#00BCD4', '#F6F7F8'] },
+        { id: 'dark-green-mining', name: 'Green Mining (défaut)', desc: 'Noir + vert Bitcoin', colors: ['#0B0D0E', '#121518', '#18A957', '#F6F7F8'] },
+        { id: 'dark-gold', name: 'Dark Gold', desc: 'Noir + or', colors: ['#0F0E0C', '#1A1814', '#FFB800', '#F6F7F8'] },
+        { id: 'dark-red-alert', name: 'Dark Red Alert', desc: 'Noir + rouge critique', colors: ['#0E0909', '#1A1212', '#EF4444', '#F6F7F8'] },
+        { id: 'dark-neutral', name: 'Dark Neutral', desc: 'Gris purs, sans accent', colors: ['#0A0A0A', '#141414', '#737373', '#F5F5F5'] }
+      ];
+
+      return `
+        <div class="config-panel__title">Palette couleurs</div>
+        ${palettes.map(p => `
+          <div class="option-card ${config.palette === p.id ? 'is-selected' : ''}" onclick="selectPalette('${p.id}')">
+            <div class="option-card__radio"></div>
+            <div style="flex:1;">
+              <div class="option-card__title">${p.name}</div>
+              <div class="option-card__desc">${p.desc}</div>
+              <div class="swatch-grid">
+                ${p.colors.map(c => `<div class="swatch" style="background:${c};"></div>`).join('')}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    function selectPalette(id) {
+      config.palette = id;
+      saveConfig();
+      renderConfig(1);
+      renderPreview();
+    }
+
+    // === STEP 4: CHART CONFIG (le plus important) ===
+    function renderChartConfig() {
+      const charts = [
+        { id: 'line-area', name: 'Line + Area Fill', desc: 'Courbes lisses avec fill gradient (Bloomberg style)' },
+        { id: 'line-sharp', name: 'Line Sharp', desc: 'Courbes angulaires précises (trading view)' },
+        { id: 'candlestick', name: 'Candlestick', desc: 'Bougies japonaises (crypto/trading)' },
+        { id: 'bar-grouped', name: 'Bar Grouped', desc: 'Barres groupées (comparaison multi-séries)' },
+        { id: 'bar-stacked', name: 'Bar Stacked', desc: 'Barres empilées (composition)' },
+        { id: 'heatmap', name: 'Heatmap', desc: 'Carte de chaleur (corrélation, volumes)' },
+        { id: 'scatter', name: 'Scatter Plot', desc: 'Nuage de points (distribution)' },
+        { id: 'mixed', name: 'Mixed (Line + Bar)', desc: 'Multi-axes combinés (Bloomberg terminal)' }
+      ];
+
+      return `
+        <div class="config-panel__title">Graphiques financiers</div>
+        
+        <div class="config-section">
+          <div class="config-section__title">Type de graphique</div>
+          ${charts.map(c => `
+            <div class="option-card ${config.chartStyle === c.id ? 'is-selected' : ''}" onclick="selectChart('${c.id}')">
+              <div class="option-card__radio"></div>
+              <div style="flex:1;">
+                <div class="option-card__title">${c.name}</div>
+                <div class="option-card__desc">${c.desc}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="config-section">
+          <div class="config-section__title">Paramètres avancés</div>
+          
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Épaisseur ligne</span>
+              <span class="slider-value" id="chartThicknessVal">${config.chartThickness}px</span>
+            </div>
+            <input type="range" min="1" max="5" step="0.5" value="${config.chartThickness}" 
+                   oninput="updateChartThickness(this.value)" />
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Opacité fill</span>
+              <span class="slider-value" id="chartOpacityVal">0.15</span>
+            </div>
+            <input type="range" min="0" max="0.4" step="0.05" value="0.15" 
+                   oninput="updateChartOpacity(this.value)" />
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Tension courbe</span>
+              <span class="slider-value" id="chartTensionVal">0.4</span>
+            </div>
+            <input type="range" min="0" max="1" step="0.1" value="0.4" 
+                   oninput="updateChartTension(this.value)" />
+          </div>
+        </div>
+      `;
+    }
+
+    function selectChart(id) {
+      config.chartStyle = id;
+      saveConfig();
+      renderConfig(4);
+      renderPreview();
+    }
+
+    function updateChartThickness(val) {
+      config.chartThickness = parseFloat(val);
+      document.getElementById('chartThicknessVal').textContent = val + 'px';
+      saveConfig();
+      renderPreview();
+    }
+
+    function updateChartOpacity(val) {
+      document.getElementById('chartOpacityVal').textContent = val;
+      renderPreview();
+    }
+
+    function updateChartTension(val) {
+      document.getElementById('chartTensionVal').textContent = val;
+      renderPreview();
+    }
+
+    // === STEP 7: DASHBOARD TEMPLATES ===
+    function renderDashboardConfig() {
+      const templates = [
+        { id: 'bloomberg-terminal', name: 'Bloomberg Terminal', desc: 'Ticker + multi-charts + KPI grid dense' },
+        { id: 'trading-view', name: 'Trading View', desc: 'Chart principal large + side panels' },
+        { id: 'mining-ops', name: 'Mining Operations', desc: 'KPI containers + heatmap sites + tables' },
+        { id: 'finance-exec', name: 'Finance Executive', desc: 'KPI larges + trend charts + tables P&L' },
+        { id: 'investor-deck', name: 'Investor Deck', desc: 'Hero stats + growth charts + key metrics' },
+        { id: 'realtime-monitor', name: 'Realtime Monitor', desc: 'Grille dense + tickers live + alerts' }
+      ];
+
+      return `
+        <div class="config-panel__title">Dashboard Templates</div>
+        ${templates.map(t => `
+          <div class="option-card ${config.dashboard === t.id ? 'is-selected' : ''}" onclick="selectDashboard('${t.id}')">
+            <div class="option-card__radio"></div>
+            <div style="flex:1;">
+              <div class="option-card__title">${t.name}</div>
+              <div class="option-card__desc">${t.desc}</div>
+            </div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    function selectDashboard(id) {
+      config.dashboard = id;
+      saveConfig();
+      renderConfig(7);
+      renderPreview();
+    }
+
+    // === RENDER PREVIEW ===
+    function renderPreview() {
+      const content = document.getElementById('previewContent');
+      
+      if (currentStep === 4) {
+        // Step graphiques: afficher les charts
+        content.innerHTML = renderChartsPreview();
+        setTimeout(() => initCharts(), 100);
+      } else if (currentStep === 7) {
+        // Step dashboard: afficher template complet
+        content.innerHTML = renderDashboardPreview();
+        setTimeout(() => initDashboardCharts(), 100);
+      } else {
+        // Autres steps: preview standard
+        content.innerHTML = renderStandardPreview();
+      }
+    }
+
+    // === CHARTS PREVIEW ===
+    function renderChartsPreview() {
+      return `
+        <!-- Ticker Bloomberg style -->
+        <div class="ticker">
+          <div class="ticker__item">
+            <span class="ticker__symbol">BTC/USD</span>
+            <span class="ticker__price">$43,256.89</span>
+            <span class="ticker__change ticker__change--up">+2.34%</span>
+          </div>
+          <div class="ticker__item">
+            <span class="ticker__symbol">HASHRATE</span>
+            <span class="ticker__price">5.98 EH/s</span>
+            <span class="ticker__change ticker__change--up">+0.12%</span>
+          </div>
+          <div class="ticker__item">
+            <span class="ticker__symbol">DIFFICULTY</span>
+            <span class="ticker__price">72.3T</span>
+            <span class="ticker__change ticker__change--down">-1.05%</span>
+          </div>
+        </div>
+
+        <!-- Chart 1: Line -->
+        <div class="chart-container">
+          <div class="chart-title">Hashrate 7D — ${config.chartStyle}</div>
+          <div class="chart-meta">
+            <div class="chart-meta__item">
+              <div class="chart-meta__dot" style="background:var(--ds-green-500);"></div>
+              <span>Current: 5.98 EH/s</span>
+            </div>
+            <div class="chart-meta__item">
+              <div class="chart-meta__dot" style="background:var(--ds-green-300);"></div>
+              <span>Peak: 6.12 EH/s</span>
+            </div>
+          </div>
+          <canvas id="chart1" style="max-height:280px;"></canvas>
+        </div>
+
+        <!-- Chart 2: Multi-series -->
+        <div class="chart-container">
+          <div class="chart-title">Power Consumption vs. Revenue (30D)</div>
+          <canvas id="chart2" style="max-height:280px;"></canvas>
+        </div>
+
+        <!-- Chart 3: Bar -->
+        <div class="chart-container">
+          <div class="chart-title">Container Performance (48 units)</div>
+          <canvas id="chart3" style="max-height:320px;"></canvas>
+        </div>
+      `;
+    }
+
+    function initCharts() {
+      // Chart 1: Line with area fill
+      const ctx1 = document.getElementById('chart1');
+      if (!ctx1) return;
+      
+      new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{
+            label: 'Hashrate',
+            data: [5.82, 5.91, 5.88, 5.95, 6.01, 5.98, 5.98],
+            borderColor: '#18A957',
+            backgroundColor: 'rgba(24, 169, 87, 0.15)',
+            borderWidth: config.chartThickness,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(246,247,248,0.08)' },
+              ticks: { color: '#8A929B', font: { size: 11, family: 'IBM Plex Mono' } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#8A929B', font: { size: 11 } }
+            }
+          }
+        }
+      });
+
+      // Chart 2: Multi-line
+      const ctx2 = document.getElementById('chart2');
+      if (!ctx2) return;
+      
+      new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 30}, (_, i) => i + 1),
+          datasets: [
+            {
+              label: 'Revenue ($)',
+              data: Array.from({length: 30}, () => Math.random() * 50000 + 100000),
+              borderColor: '#18A957',
+              borderWidth: 2,
+              fill: false
+            },
+            {
+              label: 'Power Cost ($)',
+              data: Array.from({length: 30}, () => Math.random() * 20000 + 40000),
+              borderColor: '#FFB800',
+              borderWidth: 2,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#B5BCC4', font: { size: 11 } }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(246,247,248,0.08)' },
+              ticks: { color: '#8A929B', font: { size: 11, family: 'IBM Plex Mono' } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#8A929B' }
+            }
+          }
+        }
+      });
+
+      // Chart 3: Bar
+      const ctx3 = document.getElementById('chart3');
+      if (!ctx3) return;
+      
+      new Chart(ctx3, {
+        type: 'bar',
+        data: {
+          labels: Array.from({length: 48}, (_, i) => `C${i + 1}`),
+          datasets: [{
+            label: 'Hashrate (TH/s)',
+            data: Array.from({length: 48}, () => Math.random() * 20 + 100),
+            backgroundColor: 'rgba(24, 169, 87, 0.7)',
+            borderColor: '#18A957',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(246,247,248,0.08)' },
+              ticks: { color: '#8A929B', font: { size: 10, family: 'IBM Plex Mono' } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    // === DASHBOARD PREVIEW ===
+    function renderDashboardPreview() {
+      if (config.dashboard === 'bloomberg-terminal') {
+        return renderBloombergDashboard();
+      }
+      return `<div>Dashboard ${config.dashboard} preview...</div>`;
+    }
+
+    function renderBloombergDashboard() {
+      return `
+        <!-- Ticker top -->
+        <div class="ticker">
+          <div class="ticker__item">
+            <span class="ticker__symbol">BTC/USD</span>
+            <span class="ticker__price">$43,256.89</span>
+            <span class="ticker__change ticker__change--up">+2.34%</span>
+          </div>
+          <div class="ticker__item">
+            <span class="ticker__symbol">HASHRATE</span>
+            <span class="ticker__price">5.98 EH/s</span>
+            <span class="ticker__change ticker__change--up">+0.12%</span>
+          </div>
+          <div class="ticker__item">
+            <span class="ticker__symbol">POWER</span>
+            <span class="ticker__price">87.7 MW</span>
+            <span class="ticker__change ticker__change--up">+0.05%</span>
+          </div>
+          <div class="ticker__item">
+            <span class="ticker__symbol">REVENUE/DAY</span>
+            <span class="ticker__price">$125.4K</span>
+            <span class="ticker__change ticker__change--up">+1.89%</span>
+          </div>
+        </div>
+
+        <!-- KPI Grid dense -->
+        <div class="dashboard-grid">
+          <div class="dashboard-card dashboard-card--span-3">
+            <div class="kpi-label">Total Hashrate</div>
+            <div class="kpi-value" style="color:var(--ds-green-300);">5.98 EH/s</div>
+            <div class="kpi-change kpi-change--up">↑ 0.12% (24h)</div>
+          </div>
+          <div class="dashboard-card dashboard-card--span-3">
+            <div class="kpi-label">Power Draw</div>
+            <div class="kpi-value">87.7 MW</div>
+            <div class="kpi-change kpi-change--up">↑ 0.05%</div>
+          </div>
+          <div class="dashboard-card dashboard-card--span-3">
+            <div class="kpi-label">Efficiency</div>
+            <div class="kpi-value">68.2 J/TH</div>
+            <div class="kpi-change" style="color:var(--ds-text-tertiary);">— Stable</div>
+          </div>
+          <div class="dashboard-card dashboard-card--span-3">
+            <div class="kpi-label">Uptime</div>
+            <div class="kpi-value" style="color:var(--ds-green-300);">99.8%</div>
+            <div class="kpi-change kpi-change--up">↑ 0.02%</div>
+          </div>
+
+          <!-- Main chart -->
+          <div class="dashboard-card dashboard-card--span-8">
+            <div style="margin-bottom:12px; font-size:12px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--ds-text-tertiary);">
+              HASHRATE TREND (7D)
+            </div>
+            <canvas id="dashChart1" style="max-height:240px;"></canvas>
+          </div>
+
+          <!-- Side metrics -->
+          <div class="dashboard-card dashboard-card--span-4">
+            <div style="margin-bottom:12px; font-size:12px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--ds-text-tertiary);">
+              CONTAINERS STATUS
+            </div>
+            <div style="display:grid; gap:10px;">
+              <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(24,169,87,0.12); border-radius:6px;">
+                <span style="font-size:12px; color:var(--ds-text-secondary);">Online</span>
+                <span style="font-size:14px; font-weight:700; font-family:var(--ds-font-mono); color:var(--ds-green-400);">48/48</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px; background:var(--ds-bg-canvas); border-radius:6px;">
+                <span style="font-size:12px; color:var(--ds-text-secondary);">Warnings</span>
+                <span style="font-size:14px; font-weight:700; font-family:var(--ds-font-mono); color:var(--ds-amber-500);">2</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:8px; background:var(--ds-bg-canvas); border-radius:6px;">
+                <span style="font-size:12px; color:var(--ds-text-secondary);">Offline</span>
+                <span style="font-size:14px; font-weight:700; font-family:var(--ds-font-mono);">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Revenue chart -->
+          <div class="dashboard-card dashboard-card--span-6">
+            <div style="margin-bottom:12px; font-size:12px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--ds-text-tertiary);">
+              REVENUE vs COST (30D)
+            </div>
+            <canvas id="dashChart2" style="max-height:180px;"></canvas>
+          </div>
+
+          <!-- Performance -->
+          <div class="dashboard-card dashboard-card--span-6">
+            <div style="margin-bottom:12px; font-size:12px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--ds-text-tertiary);">
+              CONTAINER PERFORMANCE
+            </div>
+            <canvas id="dashChart3" style="max-height:180px;"></canvas>
+          </div>
+        </div>
+      `;
+    }
+
+    function initDashboardCharts() {
+      // Chart 1
+      const ctx1 = document.getElementById('dashChart1');
+      if (ctx1) {
+        new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              data: [5.82, 5.91, 5.88, 5.95, 6.01, 5.98, 5.98],
+              borderColor: '#18A957',
+              backgroundColor: 'rgba(24, 169, 87, 0.15)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                grid: { color: 'rgba(246,247,248,0.08)' },
+                ticks: { color: '#8A929B', font: { size: 10, family: 'IBM Plex Mono' } }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#8A929B', font: { size: 10 } }
+              }
+            }
+          }
+        });
+      }
+
+      // Chart 2
+      const ctx2 = document.getElementById('dashChart2');
+      if (ctx2) {
+        new Chart(ctx2, {
+          type: 'line',
+          data: {
+            labels: Array.from({length: 30}, (_, i) => i + 1),
+            datasets: [
+              {
+                label: 'Revenue',
+                data: Array.from({length: 30}, () => Math.random() * 50000 + 100000),
+                borderColor: '#18A957',
+                borderWidth: 2,
+                fill: false
+              },
+              {
+                label: 'Cost',
+                data: Array.from({length: 30}, () => Math.random() * 20000 + 40000),
+                borderColor: '#FFB800',
+                borderWidth: 2,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: { color: '#B5BCC4', font: { size: 10 } }
+              }
+            },
+            scales: {
+              y: {
+                grid: { color: 'rgba(246,247,248,0.08)' },
+                ticks: { color: '#8A929B', font: { size: 9, family: 'IBM Plex Mono' } }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // Chart 3
+      const ctx3 = document.getElementById('dashChart3');
+      if (ctx3) {
+        new Chart(ctx3, {
+          type: 'bar',
+          data: {
+            labels: Array.from({length: 15}, (_, i) => `C${i + 1}`),
+            datasets: [{
+              data: Array.from({length: 15}, () => Math.random() * 20 + 95),
+              backgroundColor: 'rgba(24, 169, 87, 0.6)',
+              borderColor: '#18A957',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                grid: { color: 'rgba(246,247,248,0.08)' },
+                ticks: { color: '#8A929B', font: { size: 9 } }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#8A929B', font: { size: 9 } }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // === STANDARD PREVIEW (autres steps) ===
+    function renderStandardPreview() {
+      return `
+        <div style="padding:var(--ds-space-6); background:linear-gradient(180deg, rgba(11,13,14,0.55), rgba(11,13,14,0.88)), url('https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=1200&q=75'); background-size:cover; background-position:center; text-align:center; border-radius:var(--ds-radius-3); margin-bottom:var(--ds-space-6);">
+          <div class="ds-pill" style="margin-bottom:18px;">Qatar Vision 2030</div>
+          <h1 class="heroTitle">
+            <span class="heroTitle__row">
+              <span class="outlineA">Qatar Bitcoin</span>
+            </span>
+            <span class="heroTitle__row">
+              <span class="outlineA gradClip gradGreenCyan">Strategic Reserve</span>
+            </span>
+          </h1>
+          <div class="heroSub">100MW Sovereign Mining Facility</div>
+        </div>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:var(--ds-space-6);">
+          <button class="ds-btn ds-btn--primary">Primary Action</button>
+          <button class="ds-btn ds-btn--secondary">Secondary</button>
+          <button class="ds-btn ds-btn--pill ds-btn--primary">Pill →</button>
+        </div>
+
+        <p style="color:var(--ds-text-secondary); margin-bottom:var(--ds-space-6);">
+          Preview de votre configuration actuelle. Naviguez dans les steps pour personnaliser chaque aspect du design system.
+        </p>
+      `;
+    }
+
+    // === STORAGE ===
+    function saveConfig() {
+      localStorage.setItem('ds-builder-advanced-config', JSON.stringify(config));
+    }
+
+    function loadConfig() {
+      const saved = localStorage.getItem('ds-builder-advanced-config');
+      if (saved) Object.assign(config, JSON.parse(saved));
+    }
+
+    function resetBuilder() {
+      if (confirm('Réinitialiser toute la configuration ?')) {
+        localStorage.removeItem('ds-builder-advanced-config');
+        location.reload();
+      }
+    }
+
+    function exportFull() {
+      const data = {
+        version: '2.0.0-advanced',
+        config: config,
+        timestamp: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'design-system-advanced-config.json';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      alert('✅ Configuration avancée exportée ! Inclut tous les graphiques Bloomberg.');
+    }
+
+    function setMode(mode) {
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('is-active');
+        if (btn.dataset.mode === mode) btn.classList.add('is-active');
+      });
+    }
+
+    // Stubs pour les autres configs
+    function renderTypoConfig() { return '<div class="config-panel__title">Typographie (en construction)</div>'; }
+    function renderLayoutConfig() { return '<div class="config-panel__title">Layout (en construction)</div>'; }
+    function renderComponentsConfig() { return '<div class="config-panel__title">Composants (en construction)</div>'; }
+    function renderHeroConfig() { return '<div class="config-panel__title">Hero (en construction)</div>'; }
+    function renderExportConfig() { 
+      return `
+        <div class="config-panel__title">Export final</div>
+        <div style="padding:16px; background:rgba(24,169,87,0.12); border-radius:10px; border:1px solid var(--ds-green-500); margin-bottom:16px;">
+          <div style="font-size:14px; font-weight:600; margin-bottom:8px;">✅ Design prêt</div>
+          <div style="font-size:12px; color:var(--ds-text-secondary);">
+            Votre design system Bloomberg-style est configuré avec ${Object.keys(config).length} paramètres.
+          </div>
+        </div>
+        <button class="ds-btn ds-btn--primary" style="width:100%;" onclick="exportFull()">
+          Télécharger config complète
+        </button>
+      `;
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+

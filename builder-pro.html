@@ -1,0 +1,1267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BUILDER PRO — Live Preview + Drag & Drop</title>
+  <link rel="stylesheet" href="ds.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: var(--ds-font-sans);
+      background: var(--ds-bg-canvas);
+      color: var(--ds-text-primary);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* LAYOUT 4 ZONES */
+    .builder-pro {
+      display: grid;
+      grid-template-columns: 280px 1fr 420px;
+      grid-template-rows: 70px 1fr 48px;
+      height: 100vh;
+      gap: 0;
+    }
+
+    /* === HEADER MEGA === */
+    .mega-header {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #0B6B3A 0%, #18A957 50%, #38C172 100%);
+      border-bottom: 3px solid var(--ds-green-400);
+      padding: 0 var(--ds-space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 6px 24px rgba(24,169,87,0.4);
+    }
+    .mega-header__brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .mega-header__logo {
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      backdrop-filter: blur(10px);
+    }
+    .mega-header__title {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .mega-header__subtitle {
+      font-size: 11px;
+      color: rgba(255,255,255,0.85);
+      margin-top: 2px;
+    }
+    .mega-header__actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* === LIBRARY PANEL (gauche) === */
+    .library-panel {
+      background: var(--ds-bg-surface-1);
+      border-right: 1px solid var(--ds-border-default);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .library-section {
+      padding: var(--ds-space-5);
+      border-bottom: 1px solid var(--ds-border-subtle);
+    }
+    .library-section__title {
+      margin-bottom: var(--ds-space-4);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ds-text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .library-section__title:hover {
+      color: var(--ds-text-primary);
+    }
+    .library-section.is-collapsed .library-grid {
+      display: none;
+    }
+    .library-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    /* Draggable component */
+    .component-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--ds-border-subtle);
+      background: var(--ds-bg-canvas);
+      cursor: grab;
+      transition: all 140ms;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .component-item:hover {
+      background: var(--ds-bg-surface-2);
+      border-color: var(--ds-border-default);
+      transform: translateX(3px);
+    }
+    .component-item:active {
+      cursor: grabbing;
+      transform: scale(0.98);
+    }
+    .component-item__icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* === CANVAS BUILDER (centre) === */
+    .canvas-builder {
+      background: var(--ds-bg-canvas);
+      overflow-y: auto;
+      padding: var(--ds-space-6);
+      position: relative;
+    }
+    .canvas-dropzone {
+      min-height: calc(100vh - 118px);
+      border: 2px dashed var(--ds-border-subtle);
+      border-radius: 12px;
+      padding: var(--ds-space-6);
+      background: rgba(24,169,87,0.03);
+      position: relative;
+    }
+    .canvas-dropzone.is-over {
+      border-color: var(--ds-green-500);
+      background: rgba(24,169,87,0.12);
+    }
+    .canvas-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 400px;
+      text-align: center;
+      color: var(--ds-text-tertiary);
+    }
+    .canvas-empty__icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    .canvas-empty__text {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .canvas-empty__hint {
+      font-size: 13px;
+      opacity: 0.7;
+    }
+
+    /* Dropped components */
+    .dropped-component {
+      position: relative;
+      padding: var(--ds-space-5);
+      margin-bottom: var(--ds-space-4);
+      border: 2px solid transparent;
+      border-radius: 8px;
+      background: var(--ds-bg-surface-1);
+      transition: all 140ms;
+      cursor: move;
+    }
+    .dropped-component:hover {
+      border-color: var(--ds-border-default);
+    }
+    .dropped-component.is-selected {
+      border-color: var(--ds-green-500);
+      box-shadow: 0 0 0 3px rgba(24,169,87,0.2);
+    }
+    .dropped-component__controls {
+      position: absolute;
+      top: -12px;
+      right: 8px;
+      display: none;
+      gap: 4px;
+    }
+    .dropped-component:hover .dropped-component__controls,
+    .dropped-component.is-selected .dropped-component__controls {
+      display: flex;
+    }
+    .component-control-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      background: var(--ds-bg-surface-2);
+      border: 1px solid var(--ds-border-default);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 140ms;
+    }
+    .component-control-btn:hover {
+      background: var(--ds-green-500);
+      border-color: var(--ds-green-500);
+      color: white;
+    }
+
+    /* === LIVE PREVIEW PANEL (25% droite) === */
+    .preview-panel {
+      background: var(--ds-bg-surface-1);
+      border-left: 1px solid var(--ds-border-default);
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-header {
+      padding: var(--ds-space-4);
+      border-bottom: 1px solid var(--ds-border-default);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--ds-bg-surface-2);
+    }
+    .preview-header__title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ds-text-secondary);
+    }
+    .preview-controls {
+      display: flex;
+      gap: 6px;
+    }
+    .preview-control-btn {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--ds-border-subtle);
+      background: var(--ds-bg-canvas);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 140ms;
+    }
+    .preview-control-btn:hover {
+      background: var(--ds-bg-surface-3);
+    }
+    .preview-control-btn.is-active {
+      background: var(--ds-green-500);
+      border-color: var(--ds-green-500);
+      color: white;
+    }
+    .preview-iframe-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--ds-bg-canvas);
+    }
+    .preview-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: white;
+    }
+    .preview-mode-desktop .preview-iframe { width: 100%; }
+    .preview-mode-tablet .preview-iframe { width: 768px; margin: 0 auto; }
+    .preview-mode-mobile .preview-iframe { width: 375px; margin: 0 auto; }
+
+    /* === BOTTOM BAR === */
+    .bottom-bar {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--ds-space-6);
+      background: var(--ds-bg-surface-1);
+      border-top: 1px solid var(--ds-border-default);
+    }
+    .bottom-bar__info {
+      display: flex;
+      align-items: center;
+      gap: var(--ds-space-6);
+      font-size: 12px;
+      color: var(--ds-text-tertiary);
+    }
+    .bottom-bar__actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Shortcuts hint */
+    .shortcut-hint {
+      padding: 2px 6px;
+      background: var(--ds-bg-surface-3);
+      border-radius: 3px;
+      font-size: 10px;
+      font-family: var(--ds-font-mono);
+      color: var(--ds-text-secondary);
+    }
+
+    /* Notification toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      right: 24px;
+      padding: 14px 18px;
+      background: var(--ds-bg-surface-1);
+      border: 1px solid var(--ds-border-default);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 1000;
+      animation: slideInRight 300ms ease-out;
+      display: none;
+    }
+    .toast.is-visible {
+      display: block;
+    }
+    .toast--success {
+      border-color: var(--ds-green-500);
+      background: rgba(24,169,87,0.12);
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Drag preview ghost */
+    .drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      opacity: 0.8;
+      z-index: 9999;
+      padding: 10px 12px;
+      background: var(--ds-bg-surface-1);
+      border: 2px solid var(--ds-green-500);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(24,169,87,0.4);
+    }
+
+    /* Export modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11,13,14,0.85);
+      backdrop-filter: blur(10px);
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.is-visible {
+      display: flex;
+    }
+    .modal {
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      background: var(--ds-bg-surface-1);
+      border: 1px solid var(--ds-border-default);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    .modal__header {
+      padding: var(--ds-space-6);
+      border-bottom: 1px solid var(--ds-border-default);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal__title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .modal__close {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--ds-bg-canvas);
+      border: 1px solid var(--ds-border-default);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 140ms;
+    }
+    .modal__close:hover {
+      background: var(--ds-red-600);
+      border-color: var(--ds-red-600);
+      color: white;
+    }
+    .modal__body {
+      flex: 1;
+      padding: var(--ds-space-6);
+      overflow-y: auto;
+    }
+    .modal__footer {
+      padding: var(--ds-space-6);
+      border-top: 1px solid var(--ds-border-default);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    /* Code export */
+    .code-export {
+      padding: var(--ds-space-5);
+      background: var(--ds-bg-canvas);
+      border: 1px solid var(--ds-border-subtle);
+      border-radius: 8px;
+      font-family: var(--ds-font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre;
+      color: var(--ds-text-secondary);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--ds-bg-surface-2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--ds-bg-surface-3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--ds-green-500);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="builder-pro">
+    <!-- HEADER -->
+    <header class="mega-header">
+      <div class="mega-header__brand">
+        <div class="mega-header__logo">🎨</div>
+        <div>
+          <div class="mega-header__title">BUILDER PRO</div>
+          <div class="mega-header__subtitle">Live Preview • Drag & Drop • Export Multi-format</div>
+        </div>
+      </div>
+      <div class="mega-header__actions">
+        <button class="ds-btn ds-btn--secondary" style="border-color:rgba(255,255,255,0.35); color:white;" onclick="clearCanvas()">
+          🗑️ Clear
+        </button>
+        <button class="ds-btn ds-btn--secondary" style="border-color:rgba(255,255,255,0.35); color:white;" onclick="saveConfig()">
+          💾 Save
+        </button>
+        <button class="ds-btn ds-btn--primary" style="background:white; color:var(--ds-green-700);" onclick="openExportModal()">
+          🚀 Export
+        </button>
+      </div>
+    </header>
+
+    <!-- LIBRARY PANEL (gauche) -->
+    <aside class="library-panel" id="libraryPanel">
+      ${generateLibraryHTML()}
+    </aside>
+
+    <!-- CANVAS BUILDER (centre) -->
+    <main class="canvas-builder">
+      <div class="canvas-dropzone" id="canvasDropzone">
+        <div class="canvas-empty" id="canvasEmpty">
+          <div class="canvas-empty__icon">🎨</div>
+          <div class="canvas-empty__text">Glisse des composants ici</div>
+          <div class="canvas-empty__hint">Drag & drop depuis la bibliothèque → Preview en temps réel</div>
+        </div>
+        <div id="droppedComponents"></div>
+      </div>
+    </main>
+
+    <!-- LIVE PREVIEW PANEL (25% droite) -->
+    <aside class="preview-panel">
+      <div class="preview-header">
+        <div class="preview-header__title">🔴 LIVE PREVIEW</div>
+        <div class="preview-controls">
+          <button class="preview-control-btn is-active" data-mode="desktop" onclick="setPreviewMode('desktop')">💻</button>
+          <button class="preview-control-btn" data-mode="tablet" onclick="setPreviewMode('tablet')">📱</button>
+          <button class="preview-control-btn" data-mode="mobile" onclick="setPreviewMode('mobile')">📱</button>
+          <button class="preview-control-btn" onclick="refreshPreview()">🔄</button>
+        </div>
+      </div>
+      <div class="preview-iframe-container preview-mode-desktop" id="previewContainer">
+        <iframe class="preview-iframe" id="previewIframe"></iframe>
+      </div>
+    </aside>
+
+    <!-- BOTTOM BAR -->
+    <footer class="bottom-bar">
+      <div class="bottom-bar__info">
+        <span id="componentCount">0 composants</span>
+        <span class="shortcut-hint">⌘S Save</span>
+        <span class="shortcut-hint">⌘E Export</span>
+        <span class="shortcut-hint">⌫ Delete</span>
+      </div>
+      <div class="bottom-bar__actions">
+        <button class="ds-btn ds-btn--secondary" onclick="undo()">← Undo</button>
+        <button class="ds-btn ds-btn--secondary" onclick="redo()">Redo →</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Export modal -->
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal">
+      <div class="modal__header">
+        <div class="modal__title">🚀 Export</div>
+        <div class="modal__close" onclick="closeExportModal()">✕</div>
+      </div>
+      <div class="modal__body">
+        <div style="display:grid; gap:12px; margin-bottom:20px;">
+          <button class="ds-btn ds-btn--primary" onclick="exportHTML()" style="width:100%; justify-content:center;">
+            📄 Export HTML/CSS
+          </button>
+          <button class="ds-btn ds-btn--secondary" onclick="exportReact()" style="width:100%; justify-content:center;">
+            ⚛️ Export React Components
+          </button>
+          <button class="ds-btn ds-btn--secondary" onclick="exportVue()" style="width:100%; justify-content:center;">
+            💚 Export Vue Components
+          </button>
+          <button class="ds-btn ds-btn--secondary" onclick="exportJSON()" style="width:100%; justify-content:center;">
+            📦 Export JSON Config
+          </button>
+        </div>
+        <div id="exportCode" class="code-export" style="display:none;"></div>
+      </div>
+      <div class="modal__footer">
+        <button class="ds-btn ds-btn--secondary" onclick="closeExportModal()">Fermer</button>
+        <button class="ds-btn ds-btn--primary" onclick="copyExportCode()">📋 Copy Code</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === STATE ===
+    let droppedComponents = [];
+    let selectedComponent = null;
+    let history = [];
+    let historyIndex = -1;
+    let draggedItem = null;
+    let previewMode = 'desktop';
+
+    // === LIBRARY HTML GENERATION ===
+    function generateLibraryHTML() {
+      const sections = [
+        {
+          title: '🏷️ Badges',
+          items: [
+            { id: 'badge-success', icon: '✓', label: 'Success', type: 'badge' },
+            { id: 'badge-warning', icon: '⚠', label: 'Warning', type: 'badge' },
+            { id: 'badge-error', icon: '✕', label: 'Error', type: 'badge' },
+            { id: 'badge-crypto-btc', icon: '₿', label: 'BTC', type: 'badge' },
+            { id: 'badge-glow', icon: '✨', label: 'Glow', type: 'badge' }
+          ]
+        },
+        {
+          title: '🔘 Buttons',
+          items: [
+            { id: 'button-primary', icon: '🔵', label: 'Primary', type: 'button' },
+            { id: 'button-secondary', icon: '⚪', label: 'Secondary', type: 'button' },
+            { id: 'button-pill', icon: '💊', label: 'Pill', type: 'button' }
+          ]
+        },
+        {
+          title: '📊 Charts',
+          items: [
+            { id: 'chart-line', icon: '📈', label: 'Line Chart', type: 'chart' },
+            { id: 'chart-bar', icon: '📊', label: 'Bar Chart', type: 'chart' },
+            { id: 'chart-donut', icon: '🍩', label: 'Donut', type: 'chart' }
+          ]
+        },
+        {
+          title: '📝 Forms',
+          items: [
+            { id: 'input-text', icon: '📝', label: 'Input Text', type: 'form' },
+            { id: 'input-email', icon: '📧', label: 'Input Email', type: 'form' },
+            { id: 'textarea', icon: '📄', label: 'Textarea', type: 'form' },
+            { id: 'select', icon: '▼', label: 'Select', type: 'form' },
+            { id: 'checkbox', icon: '☑', label: 'Checkbox', type: 'form' },
+            { id: 'radio', icon: '⭕', label: 'Radio', type: 'form' }
+          ]
+        },
+        {
+          title: '📋 Tables',
+          items: [
+            { id: 'table-basic', icon: '📋', label: 'Basic Table', type: 'table' },
+            { id: 'table-sortable', icon: '🔄', label: 'Sortable', type: 'table' }
+          ]
+        },
+        {
+          title: '📦 Cards',
+          items: [
+            { id: 'card-basic', icon: '📦', label: 'Basic Card', type: 'card' },
+            { id: 'card-kpi', icon: '📊', label: 'KPI Card', type: 'card' }
+          ]
+        },
+        {
+          title: '₿ Crypto',
+          items: [
+            { id: 'logo-btc', icon: '₿', label: 'Bitcoin', type: 'crypto' },
+            { id: 'logo-eth', icon: 'Ξ', label: 'Ethereum', type: 'crypto' },
+            { id: 'ticker', icon: '📊', label: 'Ticker', type: 'crypto' }
+          ]
+        }
+      ];
+
+      return sections.map(section => \`
+        <div class="library-section">
+          <div class="library-section__title">\${section.title}</div>
+          <div class="library-grid">
+            \${section.items.map(item => \`
+              <div class="component-item" 
+                   draggable="true"
+                   data-component-id="\${item.id}"
+                   data-component-type="\${item.type}">
+                <span class="component-item__icon">\${item.icon}</span>
+                <span>\${item.label}</span>
+              </div>
+            \`).join('')}
+          </div>
+        </div>
+      \`).join('');
+    }
+
+    // === INIT ===
+    document.addEventListener('DOMContentLoaded', () => {
+      initDragDrop();
+      initKeyboardShortcuts();
+      updatePreview();
+      showToast('✅ Builder Pro chargé !', 'success');
+    });
+
+    // === DRAG & DROP ===
+    function initDragDrop() {
+      const items = document.querySelectorAll('.component-item');
+      const dropzone = document.getElementById('canvasDropzone');
+
+      items.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+      });
+
+      dropzone.addEventListener('dragover', handleDragOver);
+      dropzone.addEventListener('drop', handleDrop);
+      dropzone.addEventListener('dragleave', handleDragLeave);
+    }
+
+    function handleDragStart(e) {
+      draggedItem = {
+        id: e.target.dataset.componentId,
+        type: e.target.dataset.componentType,
+        label: e.target.textContent.trim()
+      };
+      e.dataTransfer.effectAllowed = 'copy';
+      
+      // Create drag ghost
+      const ghost = document.createElement('div');
+      ghost.className = 'drag-ghost';
+      ghost.textContent = draggedItem.label;
+      ghost.id = 'dragGhost';
+      ghost.style.left = e.clientX + 'px';
+      ghost.style.top = e.clientY + 'px';
+      document.body.appendChild(ghost);
+    }
+
+    function handleDragEnd(e) {
+      const ghost = document.getElementById('dragGhost');
+      if (ghost) ghost.remove();
+      draggedItem = null;
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      document.getElementById('canvasDropzone').classList.add('is-over');
+      
+      // Update ghost position
+      const ghost = document.getElementById('dragGhost');
+      if (ghost) {
+        ghost.style.left = e.clientX + 10 + 'px';
+        ghost.style.top = e.clientY + 10 + 'px';
+      }
+    }
+
+    function handleDragLeave(e) {
+      if (e.target.id === 'canvasDropzone') {
+        document.getElementById('canvasDropzone').classList.remove('is-over');
+      }
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('canvasDropzone').classList.remove('is-over');
+      
+      if (draggedItem) {
+        addComponent(draggedItem);
+        showToast(\`✅ \${draggedItem.label} ajouté !\`, 'success');
+      }
+    }
+
+    // === ADD COMPONENT ===
+    function addComponent(item) {
+      const component = {
+        id: Date.now(),
+        componentId: item.id,
+        type: item.type,
+        label: item.label,
+        html: generateComponentHTML(item)
+      };
+
+      droppedComponents.push(component);
+      renderCanvas();
+      updatePreview();
+      saveHistory();
+      document.getElementById('canvasEmpty').style.display = 'none';
+    }
+
+    function generateComponentHTML(item) {
+      const templates = {
+        'badge-success': '<span class="badge badge--success">✓ Success</span>',
+        'badge-warning': '<span class="badge badge--warning">⚠ Warning</span>',
+        'badge-error': '<span class="badge badge--error">✕ Error</span>',
+        'badge-crypto-btc': '<span class="badge badge--crypto-btc">₿ BTC</span>',
+        'badge-glow': '<span class="badge badge--glow">✨ Glow</span>',
+        'button-primary': '<button class="ds-btn ds-btn--primary">Action primaire</button>',
+        'button-secondary': '<button class="ds-btn ds-btn--secondary">Action secondaire</button>',
+        'button-pill': '<button class="ds-btn ds-btn--pill ds-btn--primary">Pill Button</button>',
+        'input-text': '<input type="text" class="ds-input" placeholder="Entrez du texte..." />',
+        'input-email': '<input type="email" class="ds-input" placeholder="email@example.com" />',
+        'textarea': '<textarea class="ds-textarea" rows="4" placeholder="Votre message..."></textarea>',
+        'card-basic': '<div class="ds-card"><h3>Card Title</h3><p>Card content goes here.</p></div>',
+        'card-kpi': '<div class="ds-kpi"><div class="ds-kpi__label">HASHRATE</div><div class="ds-kpi__value">5.98 EH/s</div></div>',
+        'logo-btc': '<div class="crypto-logo crypto-logo--btc" style="width:48px; height:48px; font-size:24px;">₿</div>',
+        'logo-eth': '<div class="crypto-logo crypto-logo--eth" style="width:48px; height:48px; font-size:24px;">Ξ</div>',
+        'ticker': '<div class="ticker-mega"><div class="ticker-mega__item"><div class="ticker-mega__symbol">BTC/USD</div><div class="ticker-mega__price">$43,256</div><div class="ticker-mega__change ticker-mega__change--up">+2.34%</div></div></div>'
+      };
+
+      return templates[item.id] || \`<div>Component: \${item.label}</div>\`;
+    }
+
+    // === RENDER CANVAS ===
+    function renderCanvas() {
+      const container = document.getElementById('droppedComponents');
+      container.innerHTML = droppedComponents.map(comp => \`
+        <div class="dropped-component" data-component-id="\${comp.id}" onclick="selectComponent(\${comp.id})">
+          <div class="dropped-component__controls">
+            <div class="component-control-btn" onclick="event.stopPropagation(); moveUp(\${comp.id})" title="Move up">↑</div>
+            <div class="component-control-btn" onclick="event.stopPropagation(); moveDown(\${comp.id})" title="Move down">↓</div>
+            <div class="component-control-btn" onclick="event.stopPropagation(); duplicateComponent(\${comp.id})" title="Duplicate">⎘</div>
+            <div class="component-control-btn" onclick="event.stopPropagation(); deleteComponent(\${comp.id})" title="Delete">✕</div>
+          </div>
+          \${comp.html}
+        </div>
+      \`).join('');
+
+      document.getElementById('componentCount').textContent = \`\${droppedComponents.length} composant\${droppedComponents.length > 1 ? 's' : ''}\`;
+    }
+
+    // === UPDATE PREVIEW ===
+    function updatePreview() {
+      const iframe = document.getElementById('previewIframe');
+      const html = generatePreviewHTML();
+      iframe.srcdoc = html;
+    }
+
+    function generatePreviewHTML() {
+      const componentsHTML = droppedComponents.map(c => c.html).join('\\n');
+      
+      return \`
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: #0B0D0E;
+      color: #F6F7F8;
+      padding: 24px;
+    }
+    
+    /* Import styles */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge--success {
+      background: rgba(24,169,87,0.15);
+      color: #38C172;
+      border: 1px solid #18A957;
+    }
+    .badge--warning {
+      background: rgba(199,132,0,0.15);
+      color: #C78400;
+      border: 1px solid #C78400;
+    }
+    .badge--error {
+      background: rgba(180,40,40,0.15);
+      color: #E15B5B;
+      border: 1px solid #B42828;
+    }
+    .badge--crypto-btc {
+      background: linear-gradient(135deg, #F7931A, #FF6B00);
+      color: white;
+      border: none;
+      font-family: monospace;
+    }
+    .badge--glow {
+      background: #18A957;
+      color: white;
+      box-shadow: 0 0 20px rgba(24,169,87,0.6);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(24,169,87,0.6); }
+      50% { box-shadow: 0 0 30px rgba(24,169,87,0.9); }
+    }
+    
+    .ds-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 140ms;
+      margin: 8px 8px 8px 0;
+    }
+    .ds-btn--primary {
+      background: #0B6B3A;
+      color: white;
+    }
+    .ds-btn--primary:hover {
+      background: #0F8447;
+    }
+    .ds-btn--secondary {
+      background: rgba(18,21,24,0.40);
+      border: 1px solid rgba(246,247,248,0.16);
+      color: #F6F7F8;
+    }
+    .ds-btn--pill {
+      border-radius: 999px;
+    }
+    
+    .ds-card {
+      background: #121518;
+      border: 1px solid rgba(246,247,248,0.10);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 16px 0;
+    }
+    
+    .ds-kpi {
+      background: rgba(18,21,24,0.40);
+      border: 1px solid rgba(246,247,248,0.10);
+      border-radius: 14px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .ds-kpi__label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8A929B;
+      margin-bottom: 8px;
+    }
+    .ds-kpi__value {
+      font-size: 36px;
+      font-weight: 800;
+    }
+    
+    .crypto-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 700;
+      border: 2px solid;
+      margin: 8px;
+    }
+    .crypto-logo--btc {
+      background: linear-gradient(135deg, #F7931A, #FF6B00);
+      color: white;
+      border-color: #F7931A;
+    }
+    .crypto-logo--eth {
+      background: linear-gradient(135deg, #627EEA, #3B82F6);
+      color: white;
+      border-color: #627EEA;
+    }
+    
+    .ticker-mega {
+      display: flex;
+      gap: 2px;
+      padding: 14px;
+      background: #171B1F;
+      border: 1px solid rgba(246,247,248,0.16);
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+    .ticker-mega__item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px 14px;
+      background: #121518;
+      border-radius: 6px;
+      min-width: 140px;
+    }
+    .ticker-mega__symbol {
+      font-size: 11px;
+      font-weight: 700;
+      font-family: monospace;
+      color: #8A929B;
+    }
+    .ticker-mega__price {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .ticker-mega__change {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 6px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+    .ticker-mega__change--up {
+      background: rgba(24,169,87,0.20);
+      color: #38C172;
+    }
+    
+    .ds-input, .ds-textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(246,247,248,0.16);
+      background: #121518;
+      color: #F6F7F8;
+      font-size: 14px;
+      margin: 8px 0;
+    }
+    .ds-input:focus, .ds-textarea:focus {
+      outline: 2px solid #18A957;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  \${componentsHTML}
+</body>
+</html>
+      \`;
+    }
+
+    // === PREVIEW MODES ===
+    function setPreviewMode(mode) {
+      previewMode = mode;
+      document.querySelectorAll('.preview-control-btn[data-mode]').forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.mode === mode);
+      });
+      
+      const container = document.getElementById('previewContainer');
+      container.className = 'preview-iframe-container preview-mode-' + mode;
+    }
+
+    function refreshPreview() {
+      updatePreview();
+      showToast('✅ Preview mis à jour', 'success');
+    }
+
+    // === COMPONENT ACTIONS ===
+    function selectComponent(id) {
+      selectedComponent = id;
+      document.querySelectorAll('.dropped-component').forEach(el => {
+        el.classList.toggle('is-selected', parseInt(el.dataset.componentId) === id);
+      });
+    }
+
+    function deleteComponent(id) {
+      droppedComponents = droppedComponents.filter(c => c.id !== id);
+      renderCanvas();
+      updatePreview();
+      saveHistory();
+      showToast('🗑️ Composant supprimé', 'success');
+      
+      if (droppedComponents.length === 0) {
+        document.getElementById('canvasEmpty').style.display = 'flex';
+      }
+    }
+
+    function duplicateComponent(id) {
+      const comp = droppedComponents.find(c => c.id === id);
+      if (comp) {
+        const newComp = { ...comp, id: Date.now() };
+        const index = droppedComponents.findIndex(c => c.id === id);
+        droppedComponents.splice(index + 1, 0, newComp);
+        renderCanvas();
+        updatePreview();
+        saveHistory();
+        showToast('📋 Composant dupliqué', 'success');
+      }
+    }
+
+    function moveUp(id) {
+      const index = droppedComponents.findIndex(c => c.id === id);
+      if (index > 0) {
+        [droppedComponents[index], droppedComponents[index - 1]] = 
+        [droppedComponents[index - 1], droppedComponents[index]];
+        renderCanvas();
+        updatePreview();
+        saveHistory();
+      }
+    }
+
+    function moveDown(id) {
+      const index = droppedComponents.findIndex(c => c.id === id);
+      if (index < droppedComponents.length - 1) {
+        [droppedComponents[index], droppedComponents[index + 1]] = 
+        [droppedComponents[index + 1], droppedComponents[index]];
+        renderCanvas();
+        updatePreview();
+        saveHistory();
+      }
+    }
+
+    // === HISTORY (Undo/Redo) ===
+    function saveHistory() {
+      history = history.slice(0, historyIndex + 1);
+      history.push(JSON.stringify(droppedComponents));
+      historyIndex++;
+      if (history.length > 50) {
+        history.shift();
+        historyIndex--;
+      }
+    }
+
+    function undo() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        droppedComponents = JSON.parse(history[historyIndex]);
+        renderCanvas();
+        updatePreview();
+        showToast('↶ Undo', 'success');
+      }
+    }
+
+    function redo() {
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        droppedComponents = JSON.parse(history[historyIndex]);
+        renderCanvas();
+        updatePreview();
+        showToast('↷ Redo', 'success');
+      }
+    }
+
+    // === KEYBOARD SHORTCUTS ===
+    function initKeyboardShortcuts() {
+      document.addEventListener('keydown', (e) => {
+        // Cmd/Ctrl + S : Save
+        if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+          e.preventDefault();
+          saveConfig();
+        }
+        // Cmd/Ctrl + E : Export
+        if ((e.metaKey || e.ctrlKey) && e.key === 'e') {
+          e.preventDefault();
+          openExportModal();
+        }
+        // Cmd/Ctrl + Z : Undo
+        if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+          e.preventDefault();
+          undo();
+        }
+        // Cmd/Ctrl + Shift + Z : Redo
+        if ((e.metaKey || e.ctrlKey) && e.key === 'z' && e.shiftKey) {
+          e.preventDefault();
+          redo();
+        }
+        // Delete/Backspace : Delete selected
+        if ((e.key === 'Delete' || e.key === 'Backspace') && selectedComponent) {
+          e.preventDefault();
+          deleteComponent(selectedComponent);
+        }
+      });
+    }
+
+    // === SAVE/LOAD ===
+    function saveConfig() {
+      const config = {
+        version: '1.0.0',
+        components: droppedComponents,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('builder-pro-config', JSON.stringify(config));
+      showToast('💾 Configuration sauvegardée', 'success');
+    }
+
+    function loadConfig() {
+      const saved = localStorage.getItem('builder-pro-config');
+      if (saved) {
+        const config = JSON.parse(saved);
+        droppedComponents = config.components || [];
+        renderCanvas();
+        updatePreview();
+        if (droppedComponents.length > 0) {
+          document.getElementById('canvasEmpty').style.display = 'none';
+        }
+        showToast('✅ Configuration chargée', 'success');
+      }
+    }
+
+    function clearCanvas() {
+      if (confirm('Effacer tous les composants ?')) {
+        droppedComponents = [];
+        renderCanvas();
+        updatePreview();
+        saveHistory();
+        document.getElementById('canvasEmpty').style.display = 'flex';
+        showToast('🗑️ Canvas effacé', 'success');
+      }
+    }
+
+    // === EXPORT ===
+    function openExportModal() {
+      document.getElementById('exportModal').classList.add('is-visible');
+    }
+
+    function closeExportModal() {
+      document.getElementById('exportModal').classList.remove('is-visible');
+    }
+
+    function exportHTML() {
+      const html = generatePreviewHTML();
+      document.getElementById('exportCode').textContent = html;
+      document.getElementById('exportCode').style.display = 'block';
+      showToast('✅ HTML généré !', 'success');
+    }
+
+    function exportReact() {
+      const reactCode = \`
+import React from 'react';
+import './styles.css';
+
+export default function App() {
+  return (
+    <div className="container">
+      \${droppedComponents.map((c, i) => \`
+      {/* \${c.label} */}
+      <div key={\${i}}>\${c.html.replace(/class=/g, 'className=')}</div>
+      \`).join('\\n')}
+    </div>
+  );
+}
+      \`;
+      document.getElementById('exportCode').textContent = reactCode;
+      document.getElementById('exportCode').style.display = 'block';
+      showToast('⚛️ React généré !', 'success');
+    }
+
+    function exportVue() {
+      const vueCode = \`
+<template>
+  <div class="container">
+    \${droppedComponents.map(c => c.html).join('\\n    ')}
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'App'
+}
+</script>
+
+<style scoped>
+/* Styles importés */
+</style>
+      \`;
+      document.getElementById('exportCode').textContent = vueCode;
+      document.getElementById('exportCode').style.display = 'block';
+      showToast('💚 Vue généré !', 'success');
+    }
+
+    function exportJSON() {
+      const json = JSON.stringify({ components: droppedComponents }, null, 2);
+      document.getElementById('exportCode').textContent = json;
+      document.getElementById('exportCode').style.display = 'block';
+      showToast('📦 JSON généré !', 'success');
+    }
+
+    function copyExportCode() {
+      const code = document.getElementById('exportCode').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        showToast('📋 Code copié !', 'success');
+      });
+    }
+
+    // === TOAST ===
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast toast--' + type + ' is-visible';
+      setTimeout(() => {
+        toast.classList.remove('is-visible');
+      }, 3000);
+    }
+
+    // Load saved config on init
+    window.addEventListener('load', () => {
+      loadConfig();
+    });
+  </script>
+</body>
+</html>
+
