@@ -989,48 +989,83 @@
       <!-- Section Boxes / Cards -->
       <section class="token-section" id="boxes">
         <div class="token-section__header">
-          <h2 class="token-section__title">Boxes / Cards</h2>
+          <h2 class="token-section__title">📦 Boxes / Cards</h2>
         </div>
         
         <div class="palette-grid">
-          <div class="palette-card" onclick="showComponentPreview('card-basic')">
-            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: var(--ds-bg-surface-2); height:100%;">
-              <div style="width:100%; height:20px; background: var(--ds-bg-surface-3); border-radius:4px;"></div>
-              <div style="width:80%; height:8px; background: var(--ds-border-default); border-radius:2px;"></div>
-              <div style="width:90%; height:8px; background: var(--ds-border-default); border-radius:2px;"></div>
+          <!-- Card Glassmorphism Hearst -->
+          <div class="palette-card" onclick="showComponentPreview('card-hearst-glass')">
+            <div style="display:flex; flex-direction:column; gap:8px; padding:16px; background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); height:100%; border:1px solid rgba(138,253,129,0.3); border-radius:12px;">
+              <div style="width:40px; height:40px; background: rgba(138,253,129,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(138,253,129,0.4);">
+                <div style="font-size:20px;">📊</div>
+              </div>
+              <div style="width:85%; height:10px; background: rgba(255,255,255,0.8); border-radius:3px;"></div>
+              <div style="width:70%; height:8px; background: rgba(255,255,255,0.4); border-radius:2px;"></div>
             </div>
-            <div class="palette-card__name">Card Basic</div>
+            <div class="palette-card__name">Glassmorphism Hearst</div>
           </div>
 
-          <div class="palette-card" onclick="showComponentPreview('card-gradient')">
-            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); height:100%;">
-              <div style="width:100%; height:20px; background: rgba(255,255,255,0.1); border-radius:4px;"></div>
-              <div style="width:80%; height:8px; background: rgba(255,255,255,0.1); border-radius:2px;"></div>
+          <!-- Card KPI Stats -->
+          <div class="palette-card" onclick="showComponentPreview('card-kpi')">
+            <div style="display:flex; flex-direction:column; gap:6px; padding:16px; background: var(--ds-bg-surface-2); height:100%; border-left:4px solid #8AFD81; border-radius:8px;">
+              <div style="width:60%; height:8px; background: rgba(255,255,255,0.4); border-radius:2px;"></div>
+              <div style="font-size:24px; font-weight:bold; color:#8AFD81;">5.98</div>
+              <div style="width:40%; height:6px; background: rgba(138,253,129,0.3); border-radius:2px;"></div>
             </div>
-            <div class="palette-card__name">Card Gradient</div>
+            <div class="palette-card__name">KPI Card</div>
           </div>
 
-          <div class="palette-card" onclick="showComponentPreview('card-bordered')">
-            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: var(--ds-bg-surface-2); height:100%; border:2px solid var(--ds-green-400);">
-              <div style="width:100%; height:20px; background: var(--ds-bg-surface-3); border-radius:4px;"></div>
-              <div style="width:80%; height:8px; background: var(--ds-border-default); border-radius:2px;"></div>
+          <!-- Card avec Bouton -->
+          <div class="palette-card" onclick="showComponentPreview('card-action')">
+            <div style="display:flex; flex-direction:column; gap:8px; padding:14px; background: var(--ds-bg-surface-2); height:100%; border:1px solid rgba(255,255,255,0.2); border-radius:12px;">
+              <div style="width:90%; height:10px; background: rgba(255,255,255,0.6); border-radius:3px;"></div>
+              <div style="width:100%; height:8px; background: rgba(255,255,255,0.3); border-radius:2px;"></div>
+              <div style="width:100%; height:20px; background: #8AFD81; border-radius:6px; margin-top:6px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; color:#0f172a;">ACTION</div>
             </div>
-            <div class="palette-card__name">Card Border</div>
+            <div class="palette-card__name">Card Action</div>
           </div>
 
-          <div class="palette-card" onclick="showComponentPreview('card-glass')">
-            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); height:100%; border:1px solid rgba(255,255,255,0.1);">
-              <div style="width:100%; height:20px; background: rgba(255,255,255,0.1); border-radius:4px;"></div>
-              <div style="width:80%; height:8px; background: rgba(255,255,255,0.1); border-radius:2px;"></div>
+          <!-- Card Hover Glow -->
+          <div class="palette-card" onclick="showComponentPreview('card-glow')">
+            <div style="display:flex; flex-direction:column; gap:6px; padding:14px; background: var(--ds-bg-surface-2); height:100%; border:2px solid #8AFD81; border-radius:12px; box-shadow: 0 0 20px rgba(138,253,129,0.2);">
+              <div style="width:32px; height:32px; background: #8AFD81; border-radius:6px;"></div>
+              <div style="width:80%; height:8px; background: rgba(255,255,255,0.6); border-radius:2px;"></div>
+              <div style="width:60%; height:6px; background: rgba(255,255,255,0.4); border-radius:2px;"></div>
             </div>
-            <div class="palette-card__name">Card Glass</div>
+            <div class="palette-card__name">Card Glow</div>
+          </div>
+
+          <!-- Card avec Image -->
+          <div class="palette-card" onclick="showComponentPreview('card-image')">
+            <div style="display:flex; flex-direction:column; gap:0; background: var(--ds-bg-surface-2); height:100%; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+              <div style="width:100%; height:50%; background: linear-gradient(135deg, #8AFD81 0%, #7AED71 100%);"></div>
+              <div style="padding:8px; display:flex; flex-direction:column; gap:4px;">
+                <div style="width:80%; height:8px; background: rgba(255,255,255,0.6); border-radius:2px;"></div>
+                <div style="width:60%; height:6px; background: rgba(255,255,255,0.3); border-radius:2px;"></div>
+              </div>
+            </div>
+            <div class="palette-card__name">Card Image</div>
+          </div>
+
+          <!-- Card Liste -->
+          <div class="palette-card" onclick="showComponentPreview('card-list')">
+            <div style="display:flex; flex-direction:column; gap:6px; padding:12px; background: var(--ds-bg-surface-2); height:100%; border-radius:8px;">
+              <div style="display:flex; gap:6px; align-items:center;">
+                <div style="width:6px; height:6px; background: #8AFD81; border-radius:50%;"></div>
+                <div style="flex:1; height:6px; background: rgba(255,255,255,0.4); border-radius:2px;"></div>
+              </div>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <div style="width:6px; height:6px; background: #8AFD81; border-radius:50%;"></div>
+                <div style="flex:1; height:6px; background: rgba(255,255,255,0.4); border-radius:2px;"></div>
+              </div>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <div style="width:6px; height:6px; background: #8AFD81; border-radius:50%;"></div>
+                <div style="flex:1; height:6px; background: rgba(255,255,255,0.4); border-radius:2px;"></div>
+              </div>
+            </div>
+            <div class="palette-card__name">Card Liste</div>
           </div>
         </div>
-
-        <button class="add-button">
-          <span class="add-icon"></span>
-          Nouvelle box
-        </button>
       </section>
 
       <!-- Section Menu / Navigation -->
