@@ -1,4 +1,5 @@
 {
+  "name": "hearst-theme-builder",
   "version": 2,
   "builds": [
     {
