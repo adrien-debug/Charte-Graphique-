@@ -2514,78 +2514,76 @@
       }
     }
 
+    // Global variable for selected page type
+    let selectedPageType = 'dashboard';
+    
+    // Select page type
+    function selectPageType(type) {
+      selectedPageType = type;
+      document.querySelectorAll('.page-type-option').forEach(el => {
+        if (el.dataset.type === type) {
+          el.style.borderColor = 'var(--ds-green-400)';
+          el.style.background = 'rgba(16, 185, 129, 0.1)';
+        } else {
+          el.style.borderColor = 'var(--ds-border-default)';
+          el.style.background = 'var(--ds-bg-surface-1)';
+        }
+      });
+    }
+
     // Open add page modal
     function openAddPageModal() {
       const modalBody = document.getElementById('modalBody');
       document.getElementById('modalTitle').textContent = '➕ Ajouter une Nouvelle Page';
       
-      modalBody.innerHTML = `
-        <div style="display: grid; gap: 16px;">
-          <div>
-            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">Nom de la page</label>
-            <input type="text" id="newPageName" placeholder="Ex: Ma Dashboard Principale" style="width: 100%; padding: 10px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary);">
-          </div>
-          
-          <div>
-            <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--ds-text-primary);">Type de page</label>
-            <div style="display: grid; gap: 12px;">
-              ${Object.entries(pageTemplates).map(([key, template]) => `
-                <div class="page-type-option" data-type="${key}" onclick="selectPageType('${key}')" style="padding: 16px; background: var(--ds-bg-surface-1); border: 2px solid var(--ds-border-default); border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px;">
-                  <div style="font-size: 32px;">${template.icon}</div>
-                  <div style="flex: 1;">
-                    <div style="font-weight: 600; color: var(--ds-text-primary); margin-bottom: 4px;">${template.name}</div>
-                    <div style="font-size: 12px; color: var(--ds-text-tertiary);">
-                      ${key === 'dashboard' ? 'Tableaux de bord avec KPIs et métriques' : ''}
-                      ${key === 'info' ? 'Page d\'information et documentation' : ''}
-                      ${key === 'rendering' ? 'Visualisation 3D et rendus interactifs' : ''}
-                      ${key === 'analytics' ? 'Graphiques et analyses détaillées' : ''}
-                    </div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
+      const pageTypesHTML = Object.entries(pageTemplates).map(([key, template]) => {
+        const descriptions = {
+          'dashboard': 'Tableaux de bord avec KPIs et métriques',
+          'info': 'Page d\'information et documentation',
+          'rendering': 'Visualisation 3D et rendus interactifs',
+          'analytics': 'Graphiques et analyses détaillées'
+        };
         
-        <script>
-          let selectedPageType = 'dashboard';
-          
-          function selectPageType(type) {
-            selectedPageType = type;
-            document.querySelectorAll('.page-type-option').forEach(el => {
-              if (el.dataset.type === type) {
-                el.style.borderColor = 'var(--ds-green-400)';
-                el.style.background = 'rgba(16, 185, 129, 0.1)';
-              } else {
-                el.style.borderColor = 'var(--ds-border-default)';
-                el.style.background = 'var(--ds-bg-surface-1)';
-              }
-            });
-          }
-          
-          // Pre-select dashboard
-          selectPageType('dashboard');
-        </script>
-      `;
+        return '<div class="page-type-option" data-type="' + key + '" onclick="selectPageType(\'' + key + '\')" style="padding: 16px; background: var(--ds-bg-surface-1); border: 2px solid var(--ds-border-default); border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px;">' +
+          '<div style="font-size: 32px;">' + template.icon + '</div>' +
+          '<div style="flex: 1;">' +
+            '<div style="font-weight: 600; color: var(--ds-text-primary); margin-bottom: 4px;">' + template.name + '</div>' +
+            '<div style="font-size: 12px; color: var(--ds-text-tertiary);">' + (descriptions[key] || '') + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      
+      modalBody.innerHTML = '<div style="display: grid; gap: 16px;">' +
+        '<div>' +
+          '<label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">Nom de la page</label>' +
+          '<input type="text" id="newPageName" placeholder="Ex: Ma Dashboard Principale" style="width: 100%; padding: 10px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary);">' +
+        '</div>' +
+        '<div>' +
+          '<label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--ds-text-primary);">Type de page</label>' +
+          '<div style="display: grid; gap: 12px;">' +
+            pageTypesHTML +
+          '</div>' +
+        '</div>' +
+      '</div>';
       
       // Replace modal footer buttons
       const modalFooter = document.querySelector('.modal__footer');
-      modalFooter.innerHTML = `
-        <button class="ds-btn ds-btn--secondary" onclick="closePaletteModal()">Annuler</button>
-        <button class="ds-btn ds-btn--primary" onclick="createNewPage()">✅ Créer Page</button>
-      `;
+      modalFooter.innerHTML = '<button class="ds-btn ds-btn--secondary" onclick="closePaletteModal()">Annuler</button>' +
+        '<button class="ds-btn ds-btn--primary" onclick="createNewPage()">✅ Créer Page</button>';
       
       document.getElementById('paletteModal').classList.add('is-visible');
+      
+      // Pre-select dashboard after a tiny delay to ensure DOM is ready
+      setTimeout(() => selectPageType('dashboard'), 10);
     }
 
     // Create new page
     function createNewPage() {
       const pageName = document.getElementById('newPageName').value || 'Nouvelle Page';
-      const selectedType = document.querySelector('.page-type-option[style*="--ds-green-400"]')?.dataset.type || 'dashboard';
       
       const newPage = {
         id: nextPageId++,
-        type: selectedType,
+        type: selectedPageType,
         name: pageName
       };
       
@@ -2596,7 +2594,7 @@
       renderActivePage();
       closePaletteModal();
       
-      alert(`✅ Page "${pageName}" créée avec succès!`);
+      alert('✅ Page "' + pageName + '" créée avec succès!');
     }
 
     // Initialize on load
