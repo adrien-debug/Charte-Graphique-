@@ -734,6 +734,46 @@
 
     <!-- Sidebar de sélection -->
     <aside class="selector-sidebar">
+      <!-- Section Favoris (Configuration Complète) -->
+      <section class="token-section" id="favoris" style="display: block;">
+        <div class="token-section__header">
+          <h2 class="token-section__title">⭐ Favoris</h2>
+        </div>
+        
+        <div style="padding: 20px;">
+          <!-- Big Configuration Button -->
+          <div onclick="openConfigurationComplete()" style="
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%);
+            border: 2px solid var(--ds-green-400);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+          " onmouseover="this.style.transform='scale(1.02)'; this.style.borderColor='var(--ds-green-400)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.3)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+            <div style="font-size: 64px; margin-bottom: 16px;">⚙️</div>
+            <div style="font-size: 24px; font-weight: 700; color: var(--ds-text-primary); margin-bottom: 8px;">Configuration Complète</div>
+            <div style="font-size: 14px; color: var(--ds-text-secondary); margin-bottom: 20px;">
+              Définissez tous vos tokens graphiques en un seul endroit
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">🎨 Couleurs</span>
+              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">Aa Typographie</span>
+              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">↔️ Espacements</span>
+              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">📦 Boxes</span>
+              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">☰ Menu</span>
+              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">📝 Forms</span>
+              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">🔔 Alerts</span>
+            </div>
+            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--ds-border-default);">
+              <div style="font-size: 13px; color: var(--ds-text-tertiary);">Cliquer pour ouvrir →</div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       <!-- Section Couleurs -->
       <section class="token-section" id="couleurs">
         <div class="token-section__header">
@@ -1850,12 +1890,18 @@
     // ===== NEW FLUID UX FEATURES =====
     
     // Scroll to section with smooth animation
-    // Show ALL sections (default view)
+    // Show ONLY Favoris section (Configuration Complète button)
     function showAllSections() {
-      // Show ALL sections
+      // Hide ALL sections
       document.querySelectorAll('.token-section').forEach(section => {
-        section.style.display = 'block';
+        section.style.display = 'none';
       });
+      
+      // Show ONLY Favoris section
+      const favorisSection = document.getElementById('favoris');
+      if (favorisSection) {
+        favorisSection.style.display = 'block';
+      }
       
       // Scroll to top of sidebar
       const sidebar = document.querySelector('.selector-sidebar');
@@ -1868,6 +1914,34 @@
         tab.classList.remove('is-active');
       });
       event.target.classList.add('is-active');
+    }
+    
+    // Open Configuration Complète (create a new page with all configurations)
+    function openConfigurationComplete() {
+      const pageName = '⚙️ Configuration Complète';
+      
+      // Check if config page already exists
+      const existingPage = pages.find(p => p.name === pageName);
+      if (existingPage) {
+        // Switch to existing page
+        activePage = existingPage.id;
+        renderPagesTabs();
+        renderActivePage();
+        return;
+      }
+      
+      // Create new configuration page
+      const newPage = {
+        id: nextPageId++,
+        type: 'config',
+        name: pageName
+      };
+      
+      pages.push(newPage);
+      activePage = newPage.id;
+      
+      renderPagesTabs();
+      renderActivePage();
     }
     
     // Show ONLY the selected section, hide all others
@@ -2068,10 +2142,15 @@
 
     // Initialize: Show suggestions on load
     document.addEventListener('DOMContentLoaded', () => {
-      // Initialize: Show ALL sections by default (⭐ Tout tab is active)
+      // Initialize: Show ONLY Favoris section by default (with Configuration Complète button)
       document.querySelectorAll('.token-section').forEach(section => {
-        section.style.display = 'block';
+        section.style.display = 'none';
       });
+      
+      const favorisSection = document.getElementById('favoris');
+      if (favorisSection) {
+        favorisSection.style.display = 'block';
+      }
       
       setTimeout(() => {
         const suggestions = document.getElementById('colorSuggestions');
@@ -2575,6 +2654,102 @@
           <div style="margin-top: 24px; display: flex; gap: 12px;">
             <button class="ds-btn ds-btn--primary">📥 Export CSV</button>
             <button class="ds-btn ds-btn--secondary">📊 Rapport PDF</button>
+          </div>
+        `
+      },
+      config: {
+        name: '⚙️ Configuration',
+        icon: '⚙️',
+        content: `
+          <div style="margin-bottom: 32px;">
+            <h1 style="margin-bottom: 8px;">⚙️ Configuration Complète</h1>
+            <p style="color: var(--ds-text-secondary); font-size: 14px;">Tous vos tokens graphiques en un seul endroit</p>
+          </div>
+
+          <!-- Couleurs Section -->
+          <div class="demo" style="margin-bottom: 32px;">
+            <h2 style="margin-top: 0; color: var(--ds-green-400);">🎨 Palettes de Couleurs</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+              <div onclick="applyPaletteDirectly('dark-pro')" style="padding: 20px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid var(--ds-border-default); border-radius: 12px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--ds-green-400)'" onmouseout="this.style.borderColor='var(--ds-border-default)'">
+                <div style="font-weight: 600; color: #f8fafc; margin-bottom: 8px;">Dark Pro</div>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 20px; height: 20px; background: #0f172a; border-radius: 4px;"></div>
+                  <div style="width: 20px; height: 20px; background: #10b981; border-radius: 4px;"></div>
+                  <div style="width: 20px; height: 20px; background: #1e293b; border-radius: 4px;"></div>
+                </div>
+              </div>
+              <div onclick="applyPaletteDirectly('light-clean')" style="padding: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border: 2px solid var(--ds-border-default); border-radius: 12px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--ds-green-400)'" onmouseout="this.style.borderColor='var(--ds-border-default)'">
+                <div style="font-weight: 600; color: #0f172a; margin-bottom: 8px;">Light Clean</div>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 20px; height: 20px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px;"></div>
+                  <div style="width: 20px; height: 20px; background: #0ea5e9; border-radius: 4px;"></div>
+                  <div style="width: 20px; height: 20px; background: #f1f5f9; border-radius: 4px;"></div>
+                </div>
+              </div>
+              <div onclick="applyPaletteDirectly('blue-tech')" style="padding: 20px; background: linear-gradient(135deg, #075985 0%, #0c4a6e 100%); border: 2px solid var(--ds-border-default); border-radius: 12px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--ds-green-400)'" onmouseout="this.style.borderColor='var(--ds-border-default)'">
+                <div style="font-weight: 600; color: #e0f2fe; margin-bottom: 8px;">Blue Tech</div>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 20px; height: 20px; background: #0c4a6e; border-radius: 4px;"></div>
+                  <div style="width: 20px; height: 20px; background: #06b6d4; border-radius: 4px;"></div>
+                  <div style="width: 20px; height: 20px; background: #075985; border-radius: 4px;"></div>
+                </div>
+              </div>
+              <div onclick="applyPaletteDirectly('green-mining')" style="padding: 20px; background: linear-gradient(135deg, #14532d 0%, #052e16 100%); border: 2px solid var(--ds-border-default); border-radius: 12px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--ds-green-400)'" onmouseout="this.style.borderColor='var(--ds-border-default)'">
+                <div style="font-weight: 600; color: #dcfce7; margin-bottom: 8px;">Green Mining</div>
+                <div style="display: flex; gap: 4px;">
+                  <div style="width: 20px; height: 20px; background: #052e16; border-radius: 4px;"></div>
+                  <div style="width: 20px; height: 20px; background: #22c55e; border-radius: 4px;"></div>
+                  <div style="width: 20px; height: 20px; background: #14532d; border-radius: 4px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Typography Section -->
+          <div class="demo" style="margin-bottom: 32px;">
+            <h2 style="margin-top: 0; color: var(--ds-green-400);">Aa Typographie</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+              <div onclick="applyTypography('modern')" style="padding: 24px; background: var(--ds-bg-surface-1); border: 2px solid var(--ds-border-default); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--ds-green-400)'" onmouseout="this.style.borderColor='var(--ds-border-default)'">
+                <div style="font-size: 48px; font-weight: 700; color: var(--ds-text-primary); font-family: Inter;">Aa</div>
+                <div style="margin-top: 12px; font-weight: 600; color: var(--ds-text-primary);">Modern</div>
+                <div style="font-size: 12px; color: var(--ds-text-tertiary); margin-top: 4px;">Inter + IBM Plex Mono</div>
+              </div>
+              <div onclick="applyTypography('system')" style="padding: 24px; background: var(--ds-bg-surface-1); border: 2px solid var(--ds-border-default); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--ds-green-400)'" onmouseout="this.style.borderColor='var(--ds-border-default)'">
+                <div style="font-size: 48px; font-weight: 700; color: var(--ds-text-primary); font-family: system-ui;">Aa</div>
+                <div style="margin-top: 12px; font-weight: 600; color: var(--ds-text-primary);">System</div>
+                <div style="font-size: 12px; color: var(--ds-text-tertiary); margin-top: 4px;">System UI Fonts</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spacing Section -->
+          <div class="demo" style="margin-bottom: 32px;">
+            <h2 style="margin-top: 0; color: var(--ds-green-400);">↔️ Espacements</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+              <div onclick="applySpacing('compact')" style="padding: 24px; background: var(--ds-bg-surface-1); border: 2px solid var(--ds-border-default); border-radius: 12px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--ds-green-400)'" onmouseout="this.style.borderColor='var(--ds-border-default)'">
+                <div style="font-weight: 600; color: var(--ds-text-primary); margin-bottom: 12px;">Compact</div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <div style="height: 8px; background: var(--ds-green-400); border-radius: 2px; width: 60%;"></div>
+                  <div style="height: 8px; background: var(--ds-green-400); border-radius: 2px; width: 80%;"></div>
+                  <div style="height: 8px; background: var(--ds-green-400); border-radius: 2px; width: 70%;"></div>
+                </div>
+              </div>
+              <div onclick="applySpacing('comfortable')" style="padding: 24px; background: var(--ds-bg-surface-1); border: 2px solid var(--ds-border-default); border-radius: 12px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--ds-green-400)'" onmouseout="this.style.borderColor='var(--ds-border-default)'">
+                <div style="font-weight: 600; color: var(--ds-text-primary); margin-bottom: 12px;">Confortable</div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <div style="height: 8px; background: var(--ds-green-400); border-radius: 2px; width: 60%;"></div>
+                  <div style="height: 8px; background: var(--ds-green-400); border-radius: 2px; width: 80%;"></div>
+                  <div style="height: 8px; background: var(--ds-green-400); border-radius: 2px; width: 70%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; padding: 24px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid var(--ds-green-400);">
+            <button class="ds-btn ds-btn--primary" onclick="exportTheme()">💾 Sauvegarder Configuration</button>
+            <button class="ds-btn ds-btn--secondary" onclick="saveTheme()">📥 Export JSON</button>
+            <button class="ds-btn ds-btn--secondary" onclick="openCustomPaletteCreator()">🎨 Créer Palette Custom</button>
           </div>
         `
       }
