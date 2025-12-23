@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hearst Theme Builder — Design System</title>
+  <link rel="stylesheet" href="ds.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body { 
+      margin: 0; 
+      padding: 0;
+      font-family: var(--ds-font-sans);
+    }
+
+    /* Layout principal */
+    .theme-builder {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Header titre */
+    .builder-header {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #0B0D0E 0%, #171B1F 100%);
+      border-bottom: 2px solid var(--ds-border-default);
+      padding: var(--ds-space-6) var(--ds-space-8);
+      text-align: center;
+    }
+    .builder-header h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .builder-header p {
+      margin: 8px 0 0 0;
+      color: var(--ds-text-secondary);
+      font-size: 14px;
+    }
+
+    /* Sidebar de sélection */
+    .selector-sidebar {
+      background: var(--ds-bg-surface-1);
+      border-right: 1px solid var(--ds-border-default);
+      padding: var(--ds-space-6);
+      overflow-y: auto;
+      height: calc(100vh - 120px);
+    }
+
+    /* Section de tokens */
+    .token-section {
+      margin-bottom: var(--ds-space-8);
+      padding-bottom: var(--ds-space-6);
+      border-bottom: 1px solid var(--ds-border-subtle);
+    }
+    .token-section:last-child {
+      border-bottom: none;
+    }
+    .token-section__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--ds-space-4);
+    }
+    .token-section__title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+      color: var(--ds-text-primary);
+    }
+
+    /* Grille de palettes */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Carte palette (miniature) */
+    .palette-card {
+      aspect-ratio: 1;
+      border: 2px solid var(--ds-border-subtle);
+      border-radius: var(--ds-radius-3);
+      cursor: pointer;
+      overflow: hidden;
+      transition: all var(--ds-dur-fast);
+      position: relative;
+    }
+    .palette-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--ds-green-400);
+      box-shadow: 0 8px 24px rgba(24,169,87,0.2);
+    }
+    .palette-card.is-active {
+      border-color: var(--ds-green-400);
+      box-shadow: 0 0 0 3px rgba(24,169,87,0.2);
+    }
+    .palette-card__colors {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      height: 100%;
+      width: 100%;
+    }
+    .palette-card__color {
+      width: 100%;
+      height: 100%;
+    }
+    .palette-card__name {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      color: white;
+    }
+
+    /* Bouton ajouter */
+    .add-button {
+      width: 100%;
+      padding: 12px;
+      background: var(--ds-bg-surface-2);
+      border: 2px dashed var(--ds-border-default);
+      border-radius: var(--ds-radius-3);
+      color: var(--ds-text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .add-button:hover {
+      background: var(--ds-bg-surface-3);
+      border-color: var(--ds-green-400);
+      color: var(--ds-green-400);
+    }
+    .add-icon {
+      width: 20px;
+      height: 20px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .add-icon::before,
+    .add-icon::after {
+      content: '';
+      position: absolute;
+      background: currentColor;
+    }
+    .add-icon::before {
+      width: 10px;
+      height: 2px;
+    }
+    .add-icon::after {
+      width: 2px;
+      height: 10px;
+    }
+
+    /* Zone de preview */
+    .preview-zone {
+      background: var(--ds-bg-canvas);
+      padding: var(--ds-space-8);
+      overflow-y: auto;
+      height: calc(100vh - 120px);
+    }
+    .preview-label {
+      display: inline-block;
+      padding: 6px 12px;
+      background: var(--ds-bg-surface-2);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--ds-text-tertiary);
+      margin-bottom: var(--ds-space-6);
+      text-transform: uppercase;
+    }
+    .preview-content {
+      background: var(--preview-bg, var(--ds-bg-surface-1));
+      border: 1px solid var(--ds-border-default);
+      border-radius: var(--ds-radius-3);
+      padding: var(--ds-space-10);
+      min-height: 600px;
+    }
+
+    /* Modal popup */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.is-visible {
+      display: flex;
+    }
+    .modal {
+      background: var(--ds-bg-surface-1);
+      border: 1px solid var(--ds-border-default);
+      border-radius: var(--ds-radius-3);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .modal__header {
+      padding: var(--ds-space-6);
+      border-bottom: 1px solid var(--ds-border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal__title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .modal__close {
+      background: none;
+      border: none;
+      color: var(--ds-text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+      transition: color var(--ds-dur-fast);
+    }
+    .modal__close:hover {
+      color: var(--ds-text-primary);
+    }
+    .modal__body {
+      padding: var(--ds-space-6);
+    }
+    .modal__footer {
+      padding: var(--ds-space-6);
+      border-top: 1px solid var(--ds-border-subtle);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    /* Token display */
+    .token-group {
+      margin-bottom: var(--ds-space-6);
+    }
+    .token-group__title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ds-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--ds-space-3);
+    }
+    .token-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--ds-bg-surface-2);
+      border-radius: var(--ds-radius-2);
+      margin-bottom: 6px;
+      transition: all var(--ds-dur-fast);
+    }
+    .token-item:hover {
+      background: var(--ds-bg-surface-3);
+    }
+    .token-item__name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ds-text-secondary);
+    }
+    .token-item__value {
+      font-family: var(--ds-font-mono);
+      font-size: 12px;
+      color: var(--ds-text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .token-item__swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid var(--ds-border-default);
+    }
+
+    /* Gradient preview */
+    .gradient-preview {
+      width: 100%;
+      height: 80px;
+      border-radius: var(--ds-radius-2);
+      margin-bottom: var(--ds-space-4);
+      border: 1px solid var(--ds-border-default);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .theme-builder {
+        grid-template-columns: 1fr;
+      }
+      .selector-sidebar {
+        height: auto;
+        max-height: 400px;
+      }
+      .preview-zone {
+        height: auto;
+        min-height: 400px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <div class="theme-builder">
+    <div class="builder-header">
+      <h1>HEARST TITRE</h1>
+      <p>Theme Builder — Sélectionnez vos tokens graphiques</p>
+    </div>
+
+    <!-- Sidebar de sélection -->
+    <aside class="selector-sidebar">
+      <!-- Section Couleurs -->
+      <section class="token-section">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Couleurs</h2>
+        </div>
+        
+        <div class="palette-grid" id="colorPalettes">
+          <!-- Palette 1: Dark Pro -->
+          <div class="palette-card is-active" data-palette="dark-pro" onclick="openPaletteModal('dark-pro')">
+            <div class="palette-card__colors">
+              <div class="palette-card__color" style="background: #0f172a;"></div>
+              <div class="palette-card__color" style="background: #10b981;"></div>
+              <div class="palette-card__color" style="background: #1e293b;"></div>
+              <div class="palette-card__color" style="background: #f8fafc;"></div>
+            </div>
+            <div class="palette-card__name">Dark Pro</div>
+          </div>
+
+          <!-- Palette 2: Light Clean -->
+          <div class="palette-card" data-palette="light-clean" onclick="openPaletteModal('light-clean')">
+            <div class="palette-card__colors">
+              <div class="palette-card__color" style="background: #ffffff;"></div>
+              <div class="palette-card__color" style="background: #0ea5e9;"></div>
+              <div class="palette-card__color" style="background: #f1f5f9;"></div>
+              <div class="palette-card__color" style="background: #0f172a;"></div>
+            </div>
+            <div class="palette-card__name">Light Clean</div>
+          </div>
+
+          <!-- Palette 3: Blue Tech -->
+          <div class="palette-card" data-palette="blue-tech" onclick="openPaletteModal('blue-tech')">
+            <div class="palette-card__colors">
+              <div class="palette-card__color" style="background: #0c4a6e;"></div>
+              <div class="palette-card__color" style="background: #06b6d4;"></div>
+              <div class="palette-card__color" style="background: #075985;"></div>
+              <div class="palette-card__color" style="background: #e0f2fe;"></div>
+            </div>
+            <div class="palette-card__name">Blue Tech</div>
+          </div>
+
+          <!-- Palette 4: Green Mining -->
+          <div class="palette-card" data-palette="green-mining" onclick="openPaletteModal('green-mining')">
+            <div class="palette-card__colors">
+              <div class="palette-card__color" style="background: #052e16;"></div>
+              <div class="palette-card__color" style="background: #22c55e;"></div>
+              <div class="palette-card__color" style="background: #14532d;"></div>
+              <div class="palette-card__color" style="background: #dcfce7;"></div>
+            </div>
+            <div class="palette-card__name">Green Mining</div>
+          </div>
+        </div>
+
+        <button class="add-button" onclick="alert('Fonctionnalité à venir : Créer une nouvelle palette')">
+          <span class="add-icon"></span>
+          Nouvelle palette
+        </button>
+      </section>
+
+      <!-- Section Typographie -->
+      <section class="token-section">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Typographie</h2>
+        </div>
+        
+        <div class="palette-grid">
+          <div class="palette-card" onclick="alert('Typo: Inter + IBM Plex')">
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:8px;">
+              <div style="font-size:20px; font-weight:700; color: var(--ds-text-primary);">Aa</div>
+              <div style="font-size:10px; color: var(--ds-text-tertiary); margin-top:4px;">Inter</div>
+            </div>
+            <div class="palette-card__name">Modern</div>
+          </div>
+
+          <div class="palette-card" onclick="alert('Typo: System UI')">
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:8px;">
+              <div style="font-size:20px; font-weight:700; color: var(--ds-text-primary); font-family: system-ui;">Aa</div>
+              <div style="font-size:10px; color: var(--ds-text-tertiary); margin-top:4px;">System</div>
+            </div>
+            <div class="palette-card__name">System</div>
+          </div>
+        </div>
+
+        <button class="add-button">
+          <span class="add-icon"></span>
+          Nouveau style typo
+        </button>
+      </section>
+
+      <!-- Section Espacements -->
+      <section class="token-section">
+        <div class="token-section__header">
+          <h2 class="token-section__title">Espacements</h2>
+        </div>
+        
+        <div class="palette-grid">
+          <div class="palette-card" onclick="alert('Espacements: Compact')">
+            <div style="display:flex; flex-direction:column; gap:3px; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:12px;">
+              <div style="width:60%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+              <div style="width:80%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+              <div style="width:70%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Compact</div>
+          </div>
+
+          <div class="palette-card" onclick="alert('Espacements: Confortable')">
+            <div style="display:flex; flex-direction:column; gap:8px; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:12px;">
+              <div style="width:60%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+              <div style="width:80%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+              <div style="width:70%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
+            </div>
+            <div class="palette-card__name">Confortable</div>
+          </div>
+        </div>
+
+        <button class="add-button">
+          <span class="add-icon"></span>
+          Nouveau système
+        </button>
+      </section>
+    </aside>
+
+    <!-- Zone de preview -->
+    <main class="preview-zone">
+      <span class="preview-label">🔴 Site Live Preview</span>
+      
+      <div class="preview-content" id="previewContent">
+        <h1>Design System Preview</h1>
+        <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
+          Cette zone affiche un aperçu en temps réel de votre site avec les tokens sélectionnés.
+        </p>
+
+        <div style="display: grid; gap: 16px; margin-bottom: var(--ds-space-8);">
+          <button class="ds-btn ds-btn--primary">Bouton Primary</button>
+          <button class="ds-btn ds-btn--secondary">Bouton Secondary</button>
+        </div>
+
+        <div class="demo" style="margin-top: var(--ds-space-8);">
+          <h3 style="margin-top: 0;">Exemple de contenu</h3>
+          <p style="color: var(--ds-text-secondary);">
+            Les couleurs, typographies et espacements changent automatiquement quand vous appliquez une nouvelle palette.
+          </p>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: var(--ds-space-6);">
+            <div class="ds-kpi">
+              <div class="ds-kpi__label">Hashrate</div>
+              <div class="ds-kpi__value">5.98 EH/s</div>
+              <div class="ds-kpi__meta">Live</div>
+            </div>
+            <div class="ds-kpi">
+              <div class="ds-kpi__label">Puissance</div>
+              <div class="ds-kpi__value ds-kpi__value--accent">87.7 MW</div>
+              <div class="ds-kpi__meta">Nominal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Popup pour palette détaillée -->
+  <div class="modal-overlay" id="paletteModal">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title" id="modalTitle">Palette Dark Pro</h2>
+        <button class="modal__close" onclick="closePaletteModal()">×</button>
+      </div>
+      
+      <div class="modal__body" id="modalBody">
+        <!-- Le contenu sera injecté dynamiquement -->
+      </div>
+      
+      <div class="modal__footer">
+        <button class="ds-btn ds-btn--secondary" onclick="closePaletteModal()">Retour</button>
+        <button class="ds-btn ds-btn--primary" onclick="applyPalette()">Appliquer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Définition des palettes
+    const palettes = {
+      'dark-pro': {
+        name: 'Dark Pro',
+        gradient: 'radial-gradient(ellipse at top, #1e293b 0%, #0f172a 50%, #020617 100%)',
+        background: {
+          bgPrimary: '#0f172a',
+          bgSecondary: '#1e293b',
+          bgTertiary: '#334155',
+          bgCard: 'rgba(30, 41, 59, 0.5)',
+          bgCardHover: 'rgba(30, 41, 59, 0.7)'
+        },
+        text: {
+          textPrimary: '#f8fafc',
+          textSecondary: '#e2e8f0',
+          textTertiary: '#cbd5e1',
+          textMuted: '#94a3b8'
+        },
+        accents: {
+          accentPrimary: '#10b981',
+          accentSecondary: '#14b8a6',
+          accentTertiary: '#06b6d4'
+        }
+      },
+      'light-clean': {
+        name: 'Light Clean',
+        gradient: 'radial-gradient(ellipse at top, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)',
+        background: {
+          bgPrimary: '#ffffff',
+          bgSecondary: '#f1f5f9',
+          bgTertiary: '#e2e8f0',
+          bgCard: 'rgba(241, 245, 249, 0.8)',
+          bgCardHover: 'rgba(226, 232, 240, 0.9)'
+        },
+        text: {
+          textPrimary: '#0f172a',
+          textSecondary: '#334155',
+          textTertiary: '#64748b',
+          textMuted: '#94a3b8'
+        },
+        accents: {
+          accentPrimary: '#0ea5e9',
+          accentSecondary: '#3b82f6',
+          accentTertiary: '#8b5cf6'
+        }
+      },
+      'blue-tech': {
+        name: 'Blue Tech',
+        gradient: 'radial-gradient(ellipse at top, #075985 0%, #0c4a6e 50%, #082f49 100%)',
+        background: {
+          bgPrimary: '#0c4a6e',
+          bgSecondary: '#075985',
+          bgTertiary: '#0369a1',
+          bgCard: 'rgba(7, 89, 133, 0.5)',
+          bgCardHover: 'rgba(7, 89, 133, 0.7)'
+        },
+        text: {
+          textPrimary: '#e0f2fe',
+          textSecondary: '#bae6fd',
+          textTertiary: '#7dd3fc',
+          textMuted: '#38bdf8'
+        },
+        accents: {
+          accentPrimary: '#06b6d4',
+          accentSecondary: '#0ea5e9',
+          accentTertiary: '#3b82f6'
+        }
+      },
+      'green-mining': {
+        name: 'Green Mining',
+        gradient: 'radial-gradient(ellipse at top, #14532d 0%, #052e16 50%, #022c22 100%)',
+        background: {
+          bgPrimary: '#052e16',
+          bgSecondary: '#14532d',
+          bgTertiary: '#166534',
+          bgCard: 'rgba(20, 83, 45, 0.5)',
+          bgCardHover: 'rgba(20, 83, 45, 0.7)'
+        },
+        text: {
+          textPrimary: '#dcfce7',
+          textSecondary: '#bbf7d0',
+          textTertiary: '#86efac',
+          textMuted: '#4ade80'
+        },
+        accents: {
+          accentPrimary: '#22c55e',
+          accentSecondary: '#10b981',
+          accentTertiary: '#14b8a6'
+        }
+      }
+    };
+
+    let currentPalette = 'dark-pro';
+
+    function openPaletteModal(paletteId) {
+      currentPalette = paletteId;
+      const palette = palettes[paletteId];
+      
+      document.getElementById('modalTitle').textContent = `Palette ${palette.name}`;
+      
+      const modalBody = document.getElementById('modalBody');
+      modalBody.innerHTML = `
+        <div class="token-group">
+          <h3 class="token-group__title">Dégradé de fond</h3>
+          <div class="gradient-preview" style="background: ${palette.gradient};"></div>
+          <div class="token-item">
+            <span class="token-item__name">CSS</span>
+            <span class="token-item__value">${palette.gradient}</span>
+          </div>
+        </div>
+
+        <div class="token-group">
+          <h3 class="token-group__title">Background</h3>
+          ${Object.entries(palette.background).map(([key, value]) => `
+            <div class="token-item">
+              <span class="token-item__name">${key}</span>
+              <span class="token-item__value">
+                <span class="token-item__swatch" style="background: ${value};"></span>
+                ${value}
+              </span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="token-group">
+          <h3 class="token-group__title">Text</h3>
+          ${Object.entries(palette.text).map(([key, value]) => `
+            <div class="token-item">
+              <span class="token-item__name">${key}</span>
+              <span class="token-item__value">
+                <span class="token-item__swatch" style="background: ${value};"></span>
+                ${value}
+              </span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="token-group">
+          <h3 class="token-group__title">Accents</h3>
+          ${Object.entries(palette.accents).map(([key, value]) => `
+            <div class="token-item">
+              <span class="token-item__name">${key}</span>
+              <span class="token-item__value">
+                <span class="token-item__swatch" style="background: ${value};"></span>
+                ${value}
+              </span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      document.getElementById('paletteModal').classList.add('is-visible');
+    }
+
+    function closePaletteModal() {
+      document.getElementById('paletteModal').classList.remove('is-visible');
+    }
+
+    function applyPalette() {
+      const palette = palettes[currentPalette];
+      const root = document.documentElement;
+      
+      // Appliquer les variables CSS
+      root.style.setProperty('--preview-bg', palette.gradient);
+      root.style.setProperty('--ds-bg-canvas', palette.background.bgPrimary);
+      root.style.setProperty('--ds-bg-surface-1', palette.background.bgSecondary);
+      root.style.setProperty('--ds-bg-surface-2', palette.background.bgTertiary);
+      root.style.setProperty('--ds-text-primary', palette.text.textPrimary);
+      root.style.setProperty('--ds-text-secondary', palette.text.textSecondary);
+      root.style.setProperty('--ds-text-tertiary', palette.text.textTertiary);
+      root.style.setProperty('--ds-green-400', palette.accents.accentPrimary);
+      
+      // Mettre à jour l'état actif
+      document.querySelectorAll('.palette-card').forEach(card => {
+        card.classList.remove('is-active');
+      });
+      document.querySelector(`[data-palette="${currentPalette}"]`).classList.add('is-active');
+      
+      // Animation de confirmation
+      const previewContent = document.getElementById('previewContent');
+      previewContent.style.transition = 'all 0.5s ease';
+      previewContent.style.transform = 'scale(0.98)';
+      setTimeout(() => {
+        previewContent.style.transform = 'scale(1)';
+      }, 100);
+      
+      closePaletteModal();
+      
+      // Notification
+      alert(`✅ Palette "${palette.name}" appliquée avec succès !`);
+    }
+
+    // Fermer modal avec Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePaletteModal();
+      }
+    });
+
+    // Fermer modal en cliquant sur l'overlay
+    document.getElementById('paletteModal').addEventListener('click', (e) => {
+      if (e.target.id === 'paletteModal') {
+        closePaletteModal();
+      }
+    });
+  </script>
+</body>
+</html>
+
