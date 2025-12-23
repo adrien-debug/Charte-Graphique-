@@ -46,11 +46,63 @@
 
     /* Sidebar de sélection */
     .selector-sidebar {
-      background: var(--ds-bg-surface-1);
+      background: #1a1d23;
       border-right: 1px solid var(--ds-border-default);
-      padding: var(--ds-space-6);
+      padding: 0;
       overflow-y: auto;
       height: calc(100vh - 120px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navigation menu */
+    .nav-menu {
+      flex: 1;
+      padding: var(--ds-space-2) 0;
+    }
+    .nav-item {
+      padding: 14px 24px;
+      color: #94a3b8;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+      border-left: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--ds-text-primary);
+    }
+    .nav-item.is-active {
+      background: rgba(16,185,129,0.15);
+      color: #10b981;
+      border-left-color: #10b981;
+    }
+    .nav-item__count {
+      font-size: 12px;
+      padding: 2px 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      padding: var(--ds-space-6) var(--ds-space-6);
+      border-top: 1px solid var(--ds-border-subtle);
+      text-align: center;
+    }
+    .sidebar-footer__text {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin: 0;
+      text-transform: uppercase;
+      line-height: 1.5;
     }
 
     /* Section de tokens */
@@ -346,125 +398,32 @@
 
     <!-- Sidebar de sélection -->
     <aside class="selector-sidebar">
-      <!-- Section Couleurs -->
-      <section class="token-section">
-        <div class="token-section__header">
-          <h2 class="token-section__title">Couleurs</h2>
+      <!-- Navigation menu -->
+      <nav class="nav-menu">
+        <div class="nav-item" onclick="showSection('introduction')">Introduction</div>
+        <div class="nav-item" onclick="showSection('couleurs')">
+          <span>Couleurs</span>
+          <span class="nav-item__count">4</span>
         </div>
-        
-        <div class="palette-grid" id="colorPalettes">
-          <!-- Palette 1: Dark Pro -->
-          <div class="palette-card is-active" data-palette="dark-pro" onclick="openPaletteModal('dark-pro')">
-            <div class="palette-card__colors">
-              <div class="palette-card__color" style="background: #0f172a;"></div>
-              <div class="palette-card__color" style="background: #10b981;"></div>
-              <div class="palette-card__color" style="background: #1e293b;"></div>
-              <div class="palette-card__color" style="background: #f8fafc;"></div>
-            </div>
-            <div class="palette-card__name">Dark Pro</div>
-          </div>
-
-          <!-- Palette 2: Light Clean -->
-          <div class="palette-card" data-palette="light-clean" onclick="openPaletteModal('light-clean')">
-            <div class="palette-card__colors">
-              <div class="palette-card__color" style="background: #ffffff;"></div>
-              <div class="palette-card__color" style="background: #0ea5e9;"></div>
-              <div class="palette-card__color" style="background: #f1f5f9;"></div>
-              <div class="palette-card__color" style="background: #0f172a;"></div>
-            </div>
-            <div class="palette-card__name">Light Clean</div>
-          </div>
-
-          <!-- Palette 3: Blue Tech -->
-          <div class="palette-card" data-palette="blue-tech" onclick="openPaletteModal('blue-tech')">
-            <div class="palette-card__colors">
-              <div class="palette-card__color" style="background: #0c4a6e;"></div>
-              <div class="palette-card__color" style="background: #06b6d4;"></div>
-              <div class="palette-card__color" style="background: #075985;"></div>
-              <div class="palette-card__color" style="background: #e0f2fe;"></div>
-            </div>
-            <div class="palette-card__name">Blue Tech</div>
-          </div>
-
-          <!-- Palette 4: Green Mining -->
-          <div class="palette-card" data-palette="green-mining" onclick="openPaletteModal('green-mining')">
-            <div class="palette-card__colors">
-              <div class="palette-card__color" style="background: #052e16;"></div>
-              <div class="palette-card__color" style="background: #22c55e;"></div>
-              <div class="palette-card__color" style="background: #14532d;"></div>
-              <div class="palette-card__color" style="background: #dcfce7;"></div>
-            </div>
-            <div class="palette-card__name">Green Mining</div>
-          </div>
+        <div class="nav-item" onclick="showSection('typographie')">
+          <span>Typographie</span>
+          <span class="nav-item__count">2</span>
         </div>
+        <div class="nav-item" onclick="showSection('espacements')">Espacements</div>
+        <div class="nav-item" onclick="showSection('composants')">Composants</div>
+        <div class="nav-item" onclick="showSection('grilles')">Grilles</div>
+        <div class="nav-item is-active" onclick="showSection('hero')">Hero System</div>
+        <div class="nav-item" onclick="showSection('motion')">Motion</div>
+        <div class="nav-item" onclick="showSection('3d')">3D / Render</div>
+        <div class="nav-item" onclick="showSection('export')">Export</div>
+      </nav>
 
-        <button class="add-button" onclick="alert('Fonctionnalité à venir : Créer une nouvelle palette')">
-          <span class="add-icon"></span>
-          Nouvelle palette
-        </button>
-      </section>
-
-      <!-- Section Typographie -->
-      <section class="token-section">
-        <div class="token-section__header">
-          <h2 class="token-section__title">Typographie</h2>
-        </div>
-        
-        <div class="palette-grid">
-          <div class="palette-card" onclick="alert('Typo: Inter + IBM Plex')">
-            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:8px;">
-              <div style="font-size:20px; font-weight:700; color: var(--ds-text-primary);">Aa</div>
-              <div style="font-size:10px; color: var(--ds-text-tertiary); margin-top:4px;">Inter</div>
-            </div>
-            <div class="palette-card__name">Modern</div>
-          </div>
-
-          <div class="palette-card" onclick="alert('Typo: System UI')">
-            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:8px;">
-              <div style="font-size:20px; font-weight:700; color: var(--ds-text-primary); font-family: system-ui;">Aa</div>
-              <div style="font-size:10px; color: var(--ds-text-tertiary); margin-top:4px;">System</div>
-            </div>
-            <div class="palette-card__name">System</div>
-          </div>
-        </div>
-
-        <button class="add-button">
-          <span class="add-icon"></span>
-          Nouveau style typo
-        </button>
-      </section>
-
-      <!-- Section Espacements -->
-      <section class="token-section">
-        <div class="token-section__header">
-          <h2 class="token-section__title">Espacements</h2>
-        </div>
-        
-        <div class="palette-grid">
-          <div class="palette-card" onclick="alert('Espacements: Compact')">
-            <div style="display:flex; flex-direction:column; gap:3px; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:12px;">
-              <div style="width:60%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
-              <div style="width:80%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
-              <div style="width:70%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
-            </div>
-            <div class="palette-card__name">Compact</div>
-          </div>
-
-          <div class="palette-card" onclick="alert('Espacements: Confortable')">
-            <div style="display:flex; flex-direction:column; gap:8px; justify-content:center; align-items:center; height:100%; background: var(--ds-bg-surface-2); padding:12px;">
-              <div style="width:60%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
-              <div style="width:80%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
-              <div style="width:70%; height:8px; background: var(--ds-green-400); border-radius:2px;"></div>
-            </div>
-            <div class="palette-card__name">Confortable</div>
-          </div>
-        </div>
-
-        <button class="add-button">
-          <span class="add-icon"></span>
-          Nouveau système
-        </button>
-      </section>
+      <!-- Footer -->
+      <div class="sidebar-footer">
+        <p class="sidebar-footer__text">
+          Bitcoin Mining Corp<br/>IPO-Ready
+        </p>
+      </div>
     </aside>
 
     <!-- Zone de preview -->
@@ -525,6 +484,123 @@
   </div>
 
   <script>
+    // Navigation entre sections
+    function showSection(sectionName) {
+      // Mettre à jour l'état actif
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('is-active');
+      });
+      event.currentTarget.classList.add('is-active');
+
+      // Mettre à jour le contenu de la preview
+      const previewContent = document.getElementById('previewContent');
+      
+      const sections = {
+        'introduction': `
+          <h1>Introduction</h1>
+          <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
+            Système de design complet pour société de Bitcoin mining institutionnelle.
+          </p>
+        `,
+        'couleurs': `
+          <h1>Palettes de couleurs</h1>
+          <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
+            4 palettes disponibles : Dark Pro, Light Clean, Blue Tech, Green Mining
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+            <div style="padding: 24px; background: var(--ds-bg-surface-2); border-radius: 8px; cursor: pointer;" onclick="openPaletteModal('dark-pro')">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+                <div style="height: 40px; background: #0f172a; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #10b981; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #1e293b; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #f8fafc; border-radius: 4px;"></div>
+              </div>
+              <h3 style="margin: 0; font-size: 16px;">Dark Pro</h3>
+            </div>
+            <div style="padding: 24px; background: var(--ds-bg-surface-2); border-radius: 8px; cursor: pointer;" onclick="openPaletteModal('light-clean')">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+                <div style="height: 40px; background: #ffffff; border-radius: 4px; border: 1px solid #e2e8f0;"></div>
+                <div style="height: 40px; background: #0ea5e9; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #f1f5f9; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #0f172a; border-radius: 4px;"></div>
+              </div>
+              <h3 style="margin: 0; font-size: 16px;">Light Clean</h3>
+            </div>
+            <div style="padding: 24px; background: var(--ds-bg-surface-2); border-radius: 8px; cursor: pointer;" onclick="openPaletteModal('blue-tech')">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+                <div style="height: 40px; background: #0c4a6e; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #06b6d4; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #075985; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #e0f2fe; border-radius: 4px;"></div>
+              </div>
+              <h3 style="margin: 0; font-size: 16px;">Blue Tech</h3>
+            </div>
+            <div style="padding: 24px; background: var(--ds-bg-surface-2); border-radius: 8px; cursor: pointer;" onclick="openPaletteModal('green-mining')">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;">
+                <div style="height: 40px; background: #052e16; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #22c55e; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #14532d; border-radius: 4px;"></div>
+                <div style="height: 40px; background: #dcfce7; border-radius: 4px;"></div>
+              </div>
+              <h3 style="margin: 0; font-size: 16px;">Green Mining</h3>
+            </div>
+          </div>
+        `,
+        'typographie': `
+          <h1>Typographie</h1>
+          <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
+            Inter (sans-serif) + IBM Plex Mono (données financières)
+          </p>
+          <div class="demo" style="margin-top: var(--ds-space-8);">
+            <h1 style="margin-top: 0;">Heading Level 1</h1>
+            <h2>Heading Level 2</h2>
+            <h3>Heading Level 3</h3>
+            <p>Texte courant pour paragraphes et descriptions.</p>
+            <p class="ds-data">1,234,567.89 | 87.7 MW | 5.98 EH/s</p>
+          </div>
+        `,
+        'hero': `
+          <h1>Hero System</h1>
+          <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
+            Typographie massive avec contour et dégradés optionnels
+          </p>
+          <div style="background: linear-gradient(180deg, rgba(11,13,14,0.55), rgba(11,13,14,0.88)), url('https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=1200&q=75'); background-size:cover; background-position:center; padding: var(--ds-space-10); text-align:center; border-radius: 8px;">
+            <div class="ds-pill" style="margin-bottom:18px;">Qatar Vision 2030</div>
+            <h1 class="heroTitle">
+              <span class="heroTitle__row">
+                <span class="outlineA">Qatar Bitcoin</span>
+              </span>
+              <span class="heroTitle__row">
+                <span class="outlineA gradClip gradGreenCyan">Strategic Reserve</span>
+              </span>
+            </h1>
+            <div class="heroSub">100MW Sovereign Mining Facility</div>
+          </div>
+        `,
+        'composants': `
+          <h1>Composants</h1>
+          <div style="display: grid; gap: 16px; margin-top: var(--ds-space-8);">
+            <button class="ds-btn ds-btn--primary">Bouton Primary</button>
+            <button class="ds-btn ds-btn--secondary">Bouton Secondary</button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: var(--ds-space-8);">
+            <div class="ds-kpi">
+              <div class="ds-kpi__label">Hashrate</div>
+              <div class="ds-kpi__value">5.98 EH/s</div>
+              <div class="ds-kpi__meta">Live</div>
+            </div>
+            <div class="ds-kpi">
+              <div class="ds-kpi__label">Puissance</div>
+              <div class="ds-kpi__value ds-kpi__value--accent">87.7 MW</div>
+              <div class="ds-kpi__meta">Nominal</div>
+            </div>
+          </div>
+        `
+      };
+
+      previewContent.innerHTML = sections[sectionName] || sections['hero'];
+    }
+
     // Définition des palettes
     const palettes = {
       'dark-pro': {
