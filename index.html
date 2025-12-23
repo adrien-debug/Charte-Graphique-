@@ -723,9 +723,6 @@
     <!-- Quick Navigation Tabs -->
     <div class="quick-nav">
       <button class="quick-nav__tab is-active" onclick="showAllSections()">⭐ Favoris</button>
-      <button class="quick-nav__tab" onclick="showOnlySection('couleurs')">🎨 Couleurs</button>
-      <button class="quick-nav__tab" onclick="showOnlySection('typographie')">Aa Typographie</button>
-      <button class="quick-nav__tab" onclick="showOnlySection('espacements')">↔️ Espacements</button>
       <button class="quick-nav__tab" onclick="showOnlySection('boxes')">📦 Boxes</button>
       <button class="quick-nav__tab" onclick="showOnlySection('menu')">☰ Menu</button>
       <button class="quick-nav__tab" onclick="showOnlySection('forms')">📝 Forms</button>
@@ -734,44 +731,82 @@
 
     <!-- Sidebar de sélection -->
     <aside class="selector-sidebar">
-      <!-- Section Favoris (Configuration Complète) -->
+      <!-- Section Favoris (Configurations Prédéfinies) -->
       <section class="token-section" id="favoris" style="display: block;">
         <div class="token-section__header">
-          <h2 class="token-section__title">⭐ Favoris</h2>
+          <h2 class="token-section__title">⭐ Favoris - Configurations</h2>
         </div>
         
-        <div style="padding: 20px;">
-          <!-- Big Configuration Button -->
-          <div onclick="openConfigurationComplete()" style="
-            padding: 60px 40px;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%);
-            border: 2px solid var(--ds-green-400);
-            border-radius: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-          " onmouseover="this.style.transform='scale(1.02)'; this.style.borderColor='var(--ds-green-400)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.3)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
-            <div style="font-size: 64px; margin-bottom: 16px;">⚙️</div>
-            <div style="font-size: 24px; font-weight: 700; color: var(--ds-text-primary); margin-bottom: 8px;">Configuration Complète</div>
-            <div style="font-size: 14px; color: var(--ds-text-secondary); margin-bottom: 20px;">
-              Définissez tous vos tokens graphiques en un seul endroit
+        <div class="palette-grid">
+          <!-- Configuration 1: Dark Pro + Modern + Confortable -->
+          <div class="palette-card" onclick="applyConfigPreset('config1')" style="min-height: 160px;">
+            <div style="padding: 16px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 700; font-size: 16px; color: var(--ds-text-primary); margin-bottom: 12px;">⚙️ Config 1</div>
+                <div style="font-size: 12px; color: var(--ds-text-secondary); margin-bottom: 12px;">Dark Pro • Modern • Confortable</div>
+              </div>
+              <div style="display: flex; gap: 4px; margin-top: 8px;">
+                <div style="width: 100%; height: 6px; background: #0f172a; border-radius: 3px;"></div>
+                <div style="width: 100%; height: 6px; background: #10b981; border-radius: 3px;"></div>
+                <div style="width: 100%; height: 6px; background: #1e293b; border-radius: 3px;"></div>
+              </div>
             </div>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
-              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">🎨 Couleurs</span>
-              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">Aa Typographie</span>
-              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">↔️ Espacements</span>
-              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">📦 Boxes</span>
-              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">☰ Menu</span>
-              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">📝 Forms</span>
-              <span style="padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">🔔 Alerts</span>
+            <div class="palette-card__name">Dark Professional</div>
+          </div>
+
+          <!-- Configuration 2: Light Clean + Modern + Confortable -->
+          <div class="palette-card" onclick="applyConfigPreset('config2')" style="min-height: 160px;">
+            <div style="padding: 16px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 700; font-size: 16px; color: var(--ds-text-primary); margin-bottom: 12px;">⚙️ Config 2</div>
+                <div style="font-size: 12px; color: var(--ds-text-secondary); margin-bottom: 12px;">Light Clean • Modern • Confortable</div>
+              </div>
+              <div style="display: flex; gap: 4px; margin-top: 8px;">
+                <div style="width: 100%; height: 6px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 3px;"></div>
+                <div style="width: 100%; height: 6px; background: #0ea5e9; border-radius: 3px;"></div>
+                <div style="width: 100%; height: 6px; background: #f1f5f9; border-radius: 3px;"></div>
+              </div>
             </div>
-            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--ds-border-default);">
-              <div style="font-size: 13px; color: var(--ds-text-tertiary);">Cliquer pour ouvrir →</div>
+            <div class="palette-card__name">Light & Clean</div>
+          </div>
+
+          <!-- Configuration 3: Blue Tech + System + Compact -->
+          <div class="palette-card" onclick="applyConfigPreset('config3')" style="min-height: 160px;">
+            <div style="padding: 16px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 700; font-size: 16px; color: var(--ds-text-primary); margin-bottom: 12px;">⚙️ Config 3</div>
+                <div style="font-size: 12px; color: var(--ds-text-secondary); margin-bottom: 12px;">Blue Tech • System • Compact</div>
+              </div>
+              <div style="display: flex; gap: 4px; margin-top: 8px;">
+                <div style="width: 100%; height: 6px; background: #0c4a6e; border-radius: 3px;"></div>
+                <div style="width: 100%; height: 6px; background: #06b6d4; border-radius: 3px;"></div>
+                <div style="width: 100%; height: 6px; background: #075985; border-radius: 3px;"></div>
+              </div>
             </div>
+            <div class="palette-card__name">Tech Dashboard</div>
+          </div>
+
+          <!-- Configuration 4: Green Mining + Modern + Compact -->
+          <div class="palette-card" onclick="applyConfigPreset('config4')" style="min-height: 160px;">
+            <div style="padding: 16px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 700; font-size: 16px; color: var(--ds-text-primary); margin-bottom: 12px;">⚙️ Config 4</div>
+                <div style="font-size: 12px; color: var(--ds-text-secondary); margin-bottom: 12px;">Green Mining • Modern • Compact</div>
+              </div>
+              <div style="display: flex; gap: 4px; margin-top: 8px;">
+                <div style="width: 100%; height: 6px; background: #052e16; border-radius: 3px;"></div>
+                <div style="width: 100%; height: 6px; background: #22c55e; border-radius: 3px;"></div>
+                <div style="width: 100%; height: 6px; background: #14532d; border-radius: 3px;"></div>
+              </div>
+            </div>
+            <div class="palette-card__name">Mining Ops</div>
           </div>
         </div>
+
+        <button class="add-button" onclick="openCustomConfigCreator()">
+          <span class="add-icon"></span>
+          🎨 Créer Config Custom
+        </button>
       </section>
       
       <!-- Section Couleurs -->
@@ -1914,6 +1949,52 @@
         tab.classList.remove('is-active');
       });
       event.target.classList.add('is-active');
+    }
+    
+    // Apply a complete configuration preset (palette + typography + spacing)
+    function applyConfigPreset(configId) {
+      const configs = {
+        config1: {
+          name: 'Dark Professional',
+          palette: 'dark-pro',
+          typography: 'modern',
+          spacing: 'comfortable'
+        },
+        config2: {
+          name: 'Light & Clean',
+          palette: 'light-clean',
+          typography: 'modern',
+          spacing: 'comfortable'
+        },
+        config3: {
+          name: 'Tech Dashboard',
+          palette: 'blue-tech',
+          typography: 'system',
+          spacing: 'compact'
+        },
+        config4: {
+          name: 'Mining Ops',
+          palette: 'green-mining',
+          typography: 'modern',
+          spacing: 'compact'
+        }
+      };
+      
+      const config = configs[configId];
+      if (!config) return;
+      
+      // Apply all settings at once
+      applyPaletteDirectly(config.palette);
+      applyTypography(config.typography);
+      applySpacing(config.spacing);
+      
+      // Show notification
+      alert('✅ Configuration "' + config.name + '" appliquée avec succès!\\n\\n🎨 Palette: ' + config.palette + '\\nAa Typo: ' + config.typography + '\\n↔️ Spacing: ' + config.spacing);
+    }
+    
+    // Open custom configuration creator
+    function openCustomConfigCreator() {
+      openConfigurationComplete();
     }
     
     // Open Configuration Complète (create a new page with all configurations)
