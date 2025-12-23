@@ -749,19 +749,19 @@
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-          " onmouseover="this.style.borderColor='var(--ds-green-400)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.2)'" onmouseout="this.style.borderColor='var(--ds-border-default)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          " onmouseover="this.style.borderColor='#8AFD81'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(138, 253, 129, 0.2)'" onmouseout="this.style.borderColor='var(--ds-border-default)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
               <div>
-                <div style="font-weight: 700; font-size: 18px; color: var(--ds-text-primary); margin-bottom: 6px;">⚙️ Configuration 1 - Style Hearst Qatar</div>
-                <div style="font-size: 13px; color: var(--ds-text-secondary);">Dark Pro • Modern • Confortable</div>
+                <div style="font-weight: 700; font-size: 18px; color: var(--ds-text-primary); margin-bottom: 6px;">🇶🇦 Style Hearst Qatar</div>
+                <div style="font-size: 13px; color: var(--ds-text-secondary);">Vert Hearst (#8AFD81) • Glassmorphism • Modern</div>
               </div>
-              <div style="font-size: 24px;">→</div>
+              <div style="font-size: 24px; color: #8AFD81;">→</div>
             </div>
             <div style="display: flex; gap: 6px; margin-top: 12px;">
-              <div style="flex: 1; height: 8px; background: #0f172a; border-radius: 4px;"></div>
-              <div style="flex: 1; height: 8px; background: #1e293b; border-radius: 4px;"></div>
-              <div style="flex: 1; height: 8px; background: #10b981; border-radius: 4px;"></div>
-              <div style="flex: 1; height: 8px; background: #f8fafc; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 10px; background: #0f172a; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 10px; background: #1e293b; border-radius: 4px;"></div>
+              <div style="flex: 1; height: 10px; background: #8AFD81; border-radius: 4px; box-shadow: 0 0 12px rgba(138, 253, 129, 0.4);"></div>
+              <div style="flex: 1; height: 10px; background: #7AED71; border-radius: 4px;"></div>
             </div>
           </div>
 
@@ -1244,6 +1244,45 @@
   <script>
     // Définition des palettes
     const palettes = {
+      'hearst-qatar': {
+        name: 'Hearst Qatar',
+        gradient: 'radial-gradient(ellipse at top, #1e293b 0%, #0f172a 50%, #020617 100%)',
+        background: {
+          bgPrimary: '#0f172a',        // slate-900
+          bgSecondary: '#1e293b',      // slate-800
+          bgTertiary: '#334155',       // slate-700
+          bgCard: 'rgba(255, 255, 255, 0.1)',        // white/10 glassmorphism
+          bgCardHover: 'rgba(255, 255, 255, 0.15)'   // white/15 glassmorphism
+        },
+        text: {
+          textPrimary: '#ffffff',           // white
+          textSecondary: 'rgba(255, 255, 255, 0.6)',  // white/60
+          textTertiary: 'rgba(255, 255, 255, 0.4)',   // white/40
+          textMuted: 'rgba(255, 255, 255, 0.3)'       // white/30
+        },
+        accents: {
+          accentPrimary: '#8AFD81',      // Hearst Green
+          accentSecondary: '#7AED71',    // Hearst Green Hover
+          accentTertiary: '#6ADD61'      // Hearst Green Dark
+        },
+        borders: {
+          borderDefault: 'rgba(255, 255, 255, 0.2)',   // white/20
+          borderGreen: 'rgba(138, 253, 129, 0.3)'      // hearst-green/30
+        },
+        effects: {
+          glowGreen: 'rgba(138, 253, 129, 0.05)',      // green/5 for large blur
+          glowGreenMedium: 'rgba(138, 253, 129, 0.2)', // green/20 for backgrounds
+          shadowGreen: '0 0 40px rgba(138, 253, 129, 0.2)',
+          shadowMd: '0 4px 16px rgba(0, 0, 0, 0.2)',
+          shadowLg: '0 8px 32px rgba(0, 0, 0, 0.3)'
+        },
+        semantic: {
+          success: '#27ae60',
+          error: '#e74c3c',
+          warning: '#f39c12',
+          info: '#3498db'
+        }
+      },
       'dark-pro': {
         name: 'Dark Pro',
         gradient: 'radial-gradient(ellipse at top, #1e293b 0%, #0f172a 50%, #020617 100%)',
@@ -1877,7 +1916,7 @@
       const palette = palettes[paletteId];
       const root = document.documentElement;
       
-      // Appliquer les variables CSS
+      // Appliquer les variables CSS de base
       root.style.setProperty('--preview-bg', palette.gradient);
       root.style.setProperty('--ds-bg-canvas', palette.background.bgPrimary);
       root.style.setProperty('--ds-bg-surface-1', palette.background.bgSecondary);
@@ -1886,6 +1925,33 @@
       root.style.setProperty('--ds-text-secondary', palette.text.textSecondary);
       root.style.setProperty('--ds-text-tertiary', palette.text.textTertiary);
       root.style.setProperty('--ds-green-400', palette.accents.accentPrimary);
+      root.style.setProperty('--ds-green-500', palette.accents.accentSecondary);
+      root.style.setProperty('--ds-green-600', palette.accents.accentTertiary);
+      
+      // Appliquer borders si disponibles (Hearst Qatar)
+      if (palette.borders) {
+        root.style.setProperty('--ds-border-default', palette.borders.borderDefault);
+        root.style.setProperty('--ds-border-green', palette.borders.borderGreen);
+      }
+      
+      // Appliquer effects si disponibles (Hearst Qatar)
+      if (palette.effects) {
+        root.style.setProperty('--ds-glow-green', palette.effects.glowGreen);
+        root.style.setProperty('--ds-glow-green-medium', palette.effects.glowGreenMedium);
+        root.style.setProperty('--ds-shadow-green', palette.effects.shadowGreen);
+      }
+      
+      // Appliquer couleurs sémantiques si disponibles (Hearst Qatar)
+      if (palette.semantic) {
+        root.style.setProperty('--ds-success', palette.semantic.success);
+        root.style.setProperty('--ds-error', palette.semantic.error);
+        root.style.setProperty('--ds-warning', palette.semantic.warning);
+        root.style.setProperty('--ds-info', palette.semantic.info);
+      }
+      
+      // Appliquer backgrounds cards (glassmorphism pour Hearst Qatar)
+      root.style.setProperty('--ds-bg-card', palette.background.bgCard);
+      root.style.setProperty('--ds-bg-card-hover', palette.background.bgCardHover);
       
       // Update selection bar
       const paletteColors = [palette.background.bgPrimary, palette.accents.accentPrimary, palette.background.bgSecondary];
@@ -1995,7 +2061,7 @@
       const configs = {
         config1: {
           name: 'Style Hearst Qatar',
-          palette: 'dark-pro',
+          palette: 'hearst-qatar',
           typography: 'modern',
           spacing: 'comfortable'
         },
