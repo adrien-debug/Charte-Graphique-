@@ -400,9 +400,98 @@
     /* Zone de preview */
     .preview-zone {
       background: var(--ds-bg-canvas);
-      padding: var(--ds-space-8);
+      padding: 0;
       overflow-y: auto;
       height: calc(100vh - 120px);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Pages tabs system */
+    .pages-bar {
+      background: var(--ds-bg-surface-1);
+      border-bottom: 2px solid var(--ds-border-default);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .page-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--ds-bg-surface-2);
+      border: 1px solid var(--ds-border-default);
+      border-radius: 6px;
+      color: var(--ds-text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--ds-dur-fast);
+      white-space: nowrap;
+      position: relative;
+    }
+    .page-tab:hover {
+      background: var(--ds-bg-surface-3);
+      border-color: var(--ds-green-400);
+      color: var(--ds-text-primary);
+    }
+    .page-tab.is-active {
+      background: var(--ds-green-400);
+      border-color: var(--ds-green-400);
+      color: #000;
+      font-weight: 600;
+    }
+    .page-tab__icon {
+      font-size: 16px;
+    }
+    .page-tab__close {
+      margin-left: 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+      opacity: 0.6;
+      transition: all var(--ds-dur-fast);
+    }
+    .page-tab__close:hover {
+      opacity: 1;
+      background: rgba(0,0,0,0.2);
+    }
+    .page-tab--add {
+      background: transparent;
+      border: 2px dashed var(--ds-border-default);
+      color: var(--ds-text-tertiary);
+      padding: 10px 20px;
+    }
+    .page-tab--add:hover {
+      border-color: var(--ds-green-400);
+      color: var(--ds-green-400);
+      background: rgba(16, 185, 129, 0.05);
+    }
+    
+    /* Page content wrapper */
+    .page-content-wrapper {
+      flex: 1;
+      padding: var(--ds-space-8);
+      overflow-y: auto;
+      background: var(--preview-bg, radial-gradient(ellipse at top, #1e293b 0%, #0f172a 50%, #020617 100%));
+    }
+    
+    /* Page templates */
+    .page-template {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .page-template.is-active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .preview-label {
       display: inline-block;
@@ -1006,38 +1095,14 @@
 
     <!-- Zone de preview -->
     <main class="preview-zone">
-      <span class="preview-label">🔴 Site Live Preview</span>
+      <!-- Pages tabs bar -->
+      <div class="pages-bar" id="pagesBar">
+        <!-- Les onglets de pages seront injectés ici -->
+      </div>
       
-      <div class="preview-content" id="previewContent">
-        <h1>Design System Preview</h1>
-        <p style="color: var(--ds-text-secondary); margin-bottom: var(--ds-space-6);">
-          Cette zone affiche un aperçu en temps réel de votre site avec les tokens sélectionnés.
-        </p>
-
-        <div style="display: grid; gap: 16px; margin-bottom: var(--ds-space-8);">
-          <button class="ds-btn ds-btn--primary">Bouton Primary</button>
-          <button class="ds-btn ds-btn--secondary">Bouton Secondary</button>
-        </div>
-
-        <div class="demo" style="margin-top: var(--ds-space-8);">
-          <h3 style="margin-top: 0;">Exemple de contenu</h3>
-          <p style="color: var(--ds-text-secondary);">
-            Les couleurs, typographies et espacements changent automatiquement quand vous appliquez une nouvelle palette.
-          </p>
-          
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: var(--ds-space-6);">
-            <div class="ds-kpi">
-              <div class="ds-kpi__label">Hashrate</div>
-              <div class="ds-kpi__value">5.98 EH/s</div>
-              <div class="ds-kpi__meta">Live</div>
-            </div>
-            <div class="ds-kpi">
-              <div class="ds-kpi__label">Puissance</div>
-              <div class="ds-kpi__value ds-kpi__value--accent">87.7 MW</div>
-              <div class="ds-kpi__meta">Nominal</div>
-            </div>
-          </div>
-        </div>
+      <!-- Page content wrapper -->
+      <div class="page-content-wrapper" id="pageContentWrapper">
+        <!-- Les templates de pages seront injectés ici -->
       </div>
     </main>
   </div>
@@ -2124,6 +2189,420 @@
       closePaletteModal();
       alert(`✅ Palette "${name}" créée et appliquée avec succès!\\n\\n💾 N'oubliez pas de la sauvegarder avec "Save/Load → Save Theme"`);
     }
+
+    // ==================== MULTI-PAGE SYSTEM ====================
+
+    // Page templates
+    const pageTemplates = {
+      dashboard: {
+        name: '📊 Dashboard',
+        icon: '📊',
+        content: `
+          <div style="margin-bottom: 32px;">
+            <h1 style="margin-bottom: 8px;">Dashboard - Hearst Mining</h1>
+            <p style="color: var(--ds-text-secondary); font-size: 14px;">Vue d'ensemble des performances en temps réel</p>
+          </div>
+
+          <!-- KPIs Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 32px;">
+            <div class="ds-kpi" style="padding: 24px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 12px;">
+              <div class="ds-kpi__label">Hashrate Total</div>
+              <div class="ds-kpi__value" style="font-size: 36px;">5.98 EH/s</div>
+              <div class="ds-kpi__meta">✅ Live • +2.3% vs hier</div>
+            </div>
+            <div class="ds-kpi" style="padding: 24px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 12px;">
+              <div class="ds-kpi__label">Puissance Consommée</div>
+              <div class="ds-kpi__value ds-kpi__value--accent" style="font-size: 36px;">87.7 MW</div>
+              <div class="ds-kpi__meta">⚡ Nominal • 99.8% uptime</div>
+            </div>
+            <div class="ds-kpi" style="padding: 24px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 12px;">
+              <div class="ds-kpi__label">Miners Actifs</div>
+              <div class="ds-kpi__value" style="font-size: 36px;">17,864</div>
+              <div class="ds-kpi__meta">🟢 Online • 32 en maintenance</div>
+            </div>
+            <div class="ds-kpi" style="padding: 24px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 12px;">
+              <div class="ds-kpi__label">Efficacité</div>
+              <div class="ds-kpi__value" style="font-size: 36px;">68.2 J/TH</div>
+              <div class="ds-kpi__meta">⚙️ Optimal • PUE: 1.09</div>
+            </div>
+          </div>
+
+          <!-- Actions Row -->
+          <div style="display: flex; gap: 12px; margin-bottom: 32px;">
+            <button class="ds-btn ds-btn--primary">📈 Voir Graphiques</button>
+            <button class="ds-btn ds-btn--secondary">⚙️ Configuration</button>
+            <button class="ds-btn ds-btn--secondary">📥 Export Data</button>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="demo" style="margin-top: 32px;">
+            <h3 style="margin-top: 0;">Activité Récente</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 16px; background: var(--ds-bg-surface-1); border-left: 3px solid var(--ds-green-400); border-radius: 6px;">
+                <div style="font-weight: 600; color: var(--ds-text-primary);">✅ Pool Update Successful</div>
+                <div style="font-size: 13px; color: var(--ds-text-tertiary); margin-top: 4px;">Il y a 5 minutes • Pool-A migré vers nouveau serveur</div>
+              </div>
+              <div style="padding: 16px; background: var(--ds-bg-surface-1); border-left: 3px solid #f59e0b; border-radius: 6px;">
+                <div style="font-weight: 600; color: var(--ds-text-primary);">⚠️ Maintenance Planifiée</div>
+                <div style="font-size: 13px; color: var(--ds-text-tertiary); margin-top: 4px;">Dans 2 heures • Rack B-12 maintenance préventive</div>
+              </div>
+              <div style="padding: 16px; background: var(--ds-bg-surface-1); border-left: 3px solid var(--ds-border-default); border-radius: 6px;">
+                <div style="font-weight: 600; color: var(--ds-text-primary);">📊 Rapport Généré</div>
+                <div style="font-size: 13px; color: var(--ds-text-tertiary); margin-top: 4px;">Il y a 1 heure • Rapport mensuel Décembre disponible</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      info: {
+        name: '📄 Page Info',
+        icon: '📄',
+        content: `
+          <div style="max-width: 900px; margin: 0 auto;">
+            <h1 style="margin-bottom: 24px;">Documentation Technique</h1>
+            
+            <div class="demo" style="margin-bottom: 32px;">
+              <h2 style="margin-top: 0; color: var(--ds-green-400);">Vue d'ensemble</h2>
+              <p style="color: var(--ds-text-secondary); line-height: 1.6;">
+                Cette section contient toute la documentation technique de votre projet. 
+                Vous pouvez organiser vos informations par sections, ajouter des exemples de code, 
+                et maintenir une documentation à jour pour votre équipe.
+              </p>
+            </div>
+
+            <div class="demo" style="margin-bottom: 32px;">
+              <h2 style="margin-top: 0;">Spécifications Techniques</h2>
+              <div style="display: grid; gap: 16px;">
+                <div style="padding: 16px; background: var(--ds-bg-surface-1); border-radius: 8px;">
+                  <div style="font-weight: 600; margin-bottom: 8px;">🔧 Infrastructure</div>
+                  <ul style="color: var(--ds-text-secondary); margin: 0; padding-left: 20px;">
+                    <li>Datacenter Tier III+</li>
+                    <li>Cooling: Immersion cooling + Air cooling hybride</li>
+                    <li>Connectivité: 100 Gbps fiber</li>
+                  </ul>
+                </div>
+                <div style="padding: 16px; background: var(--ds-bg-surface-1); border-radius: 8px;">
+                  <div style="font-weight: 600; margin-bottom: 8px;">⚡ Électrique</div>
+                  <ul style="color: var(--ds-text-secondary); margin: 0; padding-left: 20px;">
+                    <li>Capacité: 150 MW</li>
+                    <li>Source: 100% énergie renouvelable</li>
+                    <li>PUE: 1.09 (moyenne annuelle)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="demo">
+              <h2 style="margin-top: 0;">Contact & Support</h2>
+              <p style="color: var(--ds-text-secondary);">
+                Pour toute question technique, contactez l'équipe support à <strong>support@hearst-mining.com</strong>
+              </p>
+              <button class="ds-btn ds-btn--primary">Contacter le Support</button>
+            </div>
+          </div>
+        `
+      },
+      rendering: {
+        name: '🎨 3D Rendering',
+        icon: '🎨',
+        content: `
+          <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="margin-bottom: 8px;">Visualisation 3D</h1>
+            <p style="color: var(--ds-text-secondary);">Rendu temps réel de l'infrastructure</p>
+          </div>
+
+          <!-- 3D Placeholder -->
+          <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid var(--ds-border-default); border-radius: 16px; padding: 80px 40px; text-align: center; margin-bottom: 32px; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; border: 2px dashed var(--ds-border-default); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;">
+              <div style="font-size: 64px;">🎮</div>
+              <div style="font-size: 18px; font-weight: 600; color: var(--ds-text-primary);">Zone de Rendu 3D</div>
+              <div style="font-size: 14px; color: var(--ds-text-secondary); max-width: 400px;">
+                Intégrez ici votre viewer 3D (Three.js, Babylon.js, etc.) pour visualiser 
+                vos infrastructures, modèles CAD, ou simulations en temps réel.
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 32px;">
+            <button class="ds-btn ds-btn--secondary">🔄 Rotation Auto</button>
+            <button class="ds-btn ds-btn--secondary">📷 Capture</button>
+            <button class="ds-btn ds-btn--secondary">🔍 Zoom +</button>
+            <button class="ds-btn ds-btn--secondary">🔍 Zoom -</button>
+            <button class="ds-btn ds-btn--secondary">🏠 Reset View</button>
+            <button class="ds-btn ds-btn--primary">⬇ Export GLB</button>
+          </div>
+
+          <!-- Info panel -->
+          <div class="demo">
+            <h3 style="margin-top: 0;">Informations du Modèle</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+              <div>
+                <div style="font-size: 12px; color: var(--ds-text-tertiary); margin-bottom: 4px;">Vertices</div>
+                <div style="font-size: 20px; font-weight: 600; color: var(--ds-text-primary);">1,247,853</div>
+              </div>
+              <div>
+                <div style="font-size: 12px; color: var(--ds-text-tertiary); margin-bottom: 4px;">Faces</div>
+                <div style="font-size: 20px; font-weight: 600; color: var(--ds-text-primary);">624,192</div>
+              </div>
+              <div>
+                <div style="font-size: 12px; color: var(--ds-text-tertiary); margin-bottom: 4px;">Textures</div>
+                <div style="font-size: 20px; font-weight: 600; color: var(--ds-text-primary);">28</div>
+              </div>
+              <div>
+                <div style="font-size: 12px; color: var(--ds-text-tertiary); margin-bottom: 4px;">FPS</div>
+                <div style="font-size: 20px; font-weight: 600; color: var(--ds-green-400);">60</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      analytics: {
+        name: '📈 Analytics',
+        icon: '📈',
+        content: `
+          <div style="margin-bottom: 32px;">
+            <h1 style="margin-bottom: 8px;">Analytics & Rapports</h1>
+            <p style="color: var(--ds-text-secondary);">Analyses détaillées des performances</p>
+          </div>
+
+          <!-- Charts Placeholder -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 32px;">
+            <div class="demo">
+              <h3 style="margin-top: 0;">📊 Hashrate - 7 Derniers Jours</h3>
+              <div style="height: 200px; background: linear-gradient(to top, rgba(16, 185, 129, 0.1) 0%, transparent 100%); border: 1px solid var(--ds-border-default); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--ds-text-tertiary);">
+                Chart.js / Recharts placeholder
+              </div>
+            </div>
+            <div class="demo">
+              <h3 style="margin-top: 0;">⚡ Consommation Électrique</h3>
+              <div style="height: 200px; background: linear-gradient(to top, rgba(59, 130, 246, 0.1) 0%, transparent 100%); border: 1px solid var(--ds-border-default); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--ds-text-tertiary);">
+                Chart.js / Recharts placeholder
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Table -->
+          <div class="demo">
+            <h3 style="margin-top: 0;">Statistiques Détaillées</h3>
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--ds-border-default);">
+                    <th style="text-align: left; padding: 12px; color: var(--ds-text-secondary); font-weight: 600;">Date</th>
+                    <th style="text-align: right; padding: 12px; color: var(--ds-text-secondary); font-weight: 600;">Hashrate</th>
+                    <th style="text-align: right; padding: 12px; color: var(--ds-text-secondary); font-weight: 600;">Puissance</th>
+                    <th style="text-align: right; padding: 12px; color: var(--ds-text-secondary); font-weight: 600;">Uptime</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid var(--ds-border-subtle);">
+                    <td style="padding: 12px; color: var(--ds-text-primary);">23 Déc 2025</td>
+                    <td style="padding: 12px; color: var(--ds-text-primary); text-align: right;">5.98 EH/s</td>
+                    <td style="padding: 12px; color: var(--ds-text-primary); text-align: right;">87.7 MW</td>
+                    <td style="padding: 12px; color: var(--ds-green-400); text-align: right;">99.8%</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--ds-border-subtle);">
+                    <td style="padding: 12px; color: var(--ds-text-primary);">22 Déc 2025</td>
+                    <td style="padding: 12px; color: var(--ds-text-primary); text-align: right;">5.84 EH/s</td>
+                    <td style="padding: 12px; color: var(--ds-text-primary); text-align: right;">86.2 MW</td>
+                    <td style="padding: 12px; color: var(--ds-green-400); text-align: right;">99.9%</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid var(--ds-border-subtle);">
+                    <td style="padding: 12px; color: var(--ds-text-primary);">21 Déc 2025</td>
+                    <td style="padding: 12px; color: var(--ds-text-primary); text-align: right;">5.91 EH/s</td>
+                    <td style="padding: 12px; color: var(--ds-text-primary); text-align: right;">87.1 MW</td>
+                    <td style="padding: 12px; color: var(--ds-green-400); text-align: right;">100%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; display: flex; gap: 12px;">
+            <button class="ds-btn ds-btn--primary">📥 Export CSV</button>
+            <button class="ds-btn ds-btn--secondary">📊 Rapport PDF</button>
+          </div>
+        `
+      }
+    };
+
+    // Pages state
+    let pages = [
+      { id: 1, type: 'dashboard', name: 'Dashboard' }
+    ];
+    let activePage = 1;
+    let nextPageId = 2;
+
+    // Initialize pages system
+    function initPagesSystem() {
+      renderPagesTabs();
+      renderActivePage();
+    }
+
+    // Render pages tabs
+    function renderPagesTabs() {
+      const pagesBar = document.getElementById('pagesBar');
+      
+      const tabsHTML = pages.map(page => {
+        const template = pageTemplates[page.type];
+        return `
+          <div class="page-tab ${page.id === activePage ? 'is-active' : ''}" onclick="switchToPage(${page.id})">
+            <span class="page-tab__icon">${template.icon}</span>
+            <span>${page.name}</span>
+            ${pages.length > 1 ? `<span class="page-tab__close" onclick="event.stopPropagation(); deletePage(${page.id})">×</span>` : ''}
+          </div>
+        `;
+      }).join('');
+      
+      const addButtonHTML = `
+        <div class="page-tab page-tab--add" onclick="openAddPageModal()">
+          <span style="font-size: 18px;">➕</span>
+          <span>Ajouter Page</span>
+        </div>
+      `;
+      
+      pagesBar.innerHTML = tabsHTML + addButtonHTML;
+    }
+
+    // Render active page content
+    function renderActivePage() {
+      const pageContentWrapper = document.getElementById('pageContentWrapper');
+      const currentPage = pages.find(p => p.id === activePage);
+      
+      if (!currentPage) return;
+      
+      const template = pageTemplates[currentPage.type];
+      pageContentWrapper.innerHTML = `
+        <div class="page-template is-active">
+          <div style="margin-bottom: 16px; padding: 12px 16px; background: var(--ds-bg-surface-1); border-left: 3px solid var(--ds-green-400); border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ds-text-tertiary);">Page Active</span>
+              <div style="font-weight: 600; color: var(--ds-text-primary);">${template.icon} ${currentPage.name}</div>
+            </div>
+            <span style="padding: 4px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--ds-green-400); border-radius: 12px; font-size: 11px; font-weight: 600; color: var(--ds-green-400);">🔴 LIVE PREVIEW</span>
+          </div>
+          ${template.content}
+        </div>
+      `;
+    }
+
+    // Switch to page
+    function switchToPage(pageId) {
+      activePage = pageId;
+      renderPagesTabs();
+      renderActivePage();
+    }
+
+    // Delete page
+    function deletePage(pageId) {
+      if (pages.length === 1) {
+        alert('⚠️ Vous devez garder au moins une page!');
+        return;
+      }
+      
+      if (confirm('Êtes-vous sûr de vouloir supprimer cette page?')) {
+        pages = pages.filter(p => p.id !== pageId);
+        
+        // If we deleted the active page, switch to first page
+        if (activePage === pageId) {
+          activePage = pages[0].id;
+        }
+        
+        renderPagesTabs();
+        renderActivePage();
+      }
+    }
+
+    // Open add page modal
+    function openAddPageModal() {
+      const modalBody = document.getElementById('modalBody');
+      document.getElementById('modalTitle').textContent = '➕ Ajouter une Nouvelle Page';
+      
+      modalBody.innerHTML = `
+        <div style="display: grid; gap: 16px;">
+          <div>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--ds-text-primary);">Nom de la page</label>
+            <input type="text" id="newPageName" placeholder="Ex: Ma Dashboard Principale" style="width: 100%; padding: 10px; background: var(--ds-bg-surface-1); border: 1px solid var(--ds-border-default); border-radius: 6px; color: var(--ds-text-primary);">
+          </div>
+          
+          <div>
+            <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--ds-text-primary);">Type de page</label>
+            <div style="display: grid; gap: 12px;">
+              ${Object.entries(pageTemplates).map(([key, template]) => `
+                <div class="page-type-option" data-type="${key}" onclick="selectPageType('${key}')" style="padding: 16px; background: var(--ds-bg-surface-1); border: 2px solid var(--ds-border-default); border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px;">
+                  <div style="font-size: 32px;">${template.icon}</div>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600; color: var(--ds-text-primary); margin-bottom: 4px;">${template.name}</div>
+                    <div style="font-size: 12px; color: var(--ds-text-tertiary);">
+                      ${key === 'dashboard' ? 'Tableaux de bord avec KPIs et métriques' : ''}
+                      ${key === 'info' ? 'Page d\'information et documentation' : ''}
+                      ${key === 'rendering' ? 'Visualisation 3D et rendus interactifs' : ''}
+                      ${key === 'analytics' ? 'Graphiques et analyses détaillées' : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+        
+        <script>
+          let selectedPageType = 'dashboard';
+          
+          function selectPageType(type) {
+            selectedPageType = type;
+            document.querySelectorAll('.page-type-option').forEach(el => {
+              if (el.dataset.type === type) {
+                el.style.borderColor = 'var(--ds-green-400)';
+                el.style.background = 'rgba(16, 185, 129, 0.1)';
+              } else {
+                el.style.borderColor = 'var(--ds-border-default)';
+                el.style.background = 'var(--ds-bg-surface-1)';
+              }
+            });
+          }
+          
+          // Pre-select dashboard
+          selectPageType('dashboard');
+        </script>
+      `;
+      
+      // Replace modal footer buttons
+      const modalFooter = document.querySelector('.modal__footer');
+      modalFooter.innerHTML = `
+        <button class="ds-btn ds-btn--secondary" onclick="closePaletteModal()">Annuler</button>
+        <button class="ds-btn ds-btn--primary" onclick="createNewPage()">✅ Créer Page</button>
+      `;
+      
+      document.getElementById('paletteModal').classList.add('is-visible');
+    }
+
+    // Create new page
+    function createNewPage() {
+      const pageName = document.getElementById('newPageName').value || 'Nouvelle Page';
+      const selectedType = document.querySelector('.page-type-option[style*="--ds-green-400"]')?.dataset.type || 'dashboard';
+      
+      const newPage = {
+        id: nextPageId++,
+        type: selectedType,
+        name: pageName
+      };
+      
+      pages.push(newPage);
+      activePage = newPage.id;
+      
+      renderPagesTabs();
+      renderActivePage();
+      closePaletteModal();
+      
+      alert(`✅ Page "${pageName}" créée avec succès!`);
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      initPagesSystem();
+    });
   </script>
 </body>
 </html>
